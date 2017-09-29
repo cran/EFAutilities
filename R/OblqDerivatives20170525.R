@@ -338,49 +338,61 @@ Result.Phi
 ### Guangjian Zhang, 2009-06-17, Wednesday
 ### Guangjian Zhang, 2015-05-26, Tuesday, it takes dQ.L as an input argument
 ### Guangjian Zhang, 2016-03-18, Friday, to accommodate RCPhi
+### Guangjian Zhang, 2017-05-25, Thursday, replace analytic derivatives with numerical derivatives
 
-DCon.RCPhi2.Phi.20160318 <- function (Lambda,Phi, dQ.L, PhiWeight) {
+
+DCon.RCPhi2.Phi.20170525 <- function (Lambda,Phi, dQ.L, PhiWeight,PhiTarget) {
 
 # Lambda (p,m), the roated factor loading matrix
 # Phi (m,m), the rotated factor correlations matrix
 # dQ.L, the derivatives of the rotation criterion with regard to rotated factor loadings
 # PhiWeight, the weight matrix for factor correlations, added to accommodate RCPhi
+# PhiTarget, the weight matrix for factor correlations, added to accommodate RCPhi
 
 # The function invokes no other external functions.
 
-# library(MASS)
 
  p = dim(Lambda)[1]
  m = dim(Lambda)[2]
 
 
-Phi.inverse = solve(Phi)
 
-Constraint = t(Lambda) %*% (dQ.L) %*% Phi.inverse
+Results <- array (rep(0,m*m*m*m), dim=c(m,m,m,m))
 
-Result.Phi <- array (rep(0,m*m*m*m), dim=c(m,m,m,m))
+Z = matrix(0,m,m)
+eps = 1e-5
+i = 1
+j = 1
 
-for (v in 1:m) {
-  for (u in 1:m) {
-     for (y in 1:m) {
-         for (x in 1:m) {
-                   if ( v != u && x != y )  { 
-                               delta.ux =0
-                               delta.uy =0
-                               if (u==x) delta.ux=1
-                               if (u==y) delta.uy=1
-                               Result.Phi[u,v,x,y] = - (delta.ux * Phi.inverse[y,v] + delta.uy * Phi.inverse[x,v]) * Constraint[u,u] 
-                                                     - 2 * PhiWeight[u,v] * PhiWeight[x,y]  # 2016-03-18, GZ                              
-                               } # if ( v != u && x != y )
-                        } # (for x in 1:m)
-                    } # (y in 1:m)
-                 } # (u in 1:m)
-               } # (v in 1:m)
+Temp.first = t(Lambda) %*% dQ.L
 
-Result.Phi
 
-} # DCon.RCPhi2.Phi.20160318
-#----------------------------------------------------------------------------------------------------
+for (l in 2:m) {
+  for (k in 1:(l-1)) {
+    dZ = Z
+    dZ[k,l] = eps
+    dZ[l,k] = eps
+    Phi.positive = Phi + dZ
+    Phi.negative = Phi - dZ
+
+
+    # The purpose of this line to evaluate numerical derivatives without having to invert Phi
+    # solve is more computationally stable than ginv
+
+
+
+    Results [1:m,1:m,k,l] = ( ( Temp.first %*%(solve(Phi.positive)) - 2*(Phi.positive - PhiTarget)* PhiWeight ) -
+                                      ( Temp.first %*%(solve(Phi.negative)) - 2*(Phi.negative - PhiTarget)* PhiWeight ) ) / (2*eps)
+    Results [1:m,1:m,l,k] = Results [1:m,1:m,k,l] # 2017-05-26, GZ
+
+   }
+ }
+
+Results
+
+
+} # DCon.RCPhi2.Phi.20170525
+#......................................................................................
 
 
 
@@ -468,7 +480,8 @@ if (rotation == 'geomin') {
 
 
 if (rotation == 'xtarget') {
-d.Con.Phi = DCon.RCPhi2.Phi.20160318 (Lambda,Phi, dQ.L, PhiWeight)  ### 2016-06-03, GZ
+# d.Con.Phi = DCon.RCPhi2.Phi.20160318 (Lambda,Phi, dQ.L, PhiWeight)  ### 2016-06-03, GZ
+  d.Con.Phi = DCon.RCPhi2.Phi.20170525 (Lambda,Phi, dQ.L, PhiWeight, PhiTarget)  ### 2017-05-25, GZ
 } else {
 d.Con.Phi = Derivative.Constraints.Phi.20150526 (Lambda, Phi,dQ.L)
 }

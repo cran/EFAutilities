@@ -1,5 +1,8 @@
-oblq.se.augmt <-
-function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
+#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions
+#### 2016-06-02, Thursday, Guangjian Zhang
+
+
+oblq.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
                           PhiWeight = NULL, PhiTarget = NULL, u.r = NULL) {
 
 # source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
@@ -88,7 +91,7 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normal
 
 } else if (rotation=='xtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',MWeight=MWeight, MTarget=MTarget, )
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget )
 
 
 } else {

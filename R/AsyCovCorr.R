@@ -1,5 +1,4 @@
-AsyCovCorr <-
-function(X) {
+AsyCovCorr <- function(X) {
 
 ## The function AsyCovCorr implements the asymptotic covariance matrix of correlations for an arbitrary distribution
 ## described in Browne & Shapiro (1986), the asymptotic covariance matrix of sample correlation coefficients under
@@ -100,4 +99,3 @@ C.Gamma = Gamma -  Temp2 - t(Temp2) + Temp4 # Equation (3.2) on page 171
 list(mean=Xmean,sd = SD, corr = R0, asc = C.Gamma)
 
 } ## AsyCovCorr <- function(X)
-

@@ -9,7 +9,7 @@
 ## ==============================================================================
 get.RGamma = function(dat, gamma=FALSE)
 {
-  #library("mvtnorm")
+    #library("mvtnorm")
   # test if data set contains continuous/constant variables
   cont = apply(dat, 2, function(x18) sum(abs(x18-round(x18))))
   if (any(cont!=0)){

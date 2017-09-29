@@ -1,5 +1,6 @@
-#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions. 
 
+#### 2017-03-27, Monday, Guangjian Zhang, standard errors for commuanalities
+#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions. 
 #### 2016-06-02, Thursday, Guangjian Zhang
 
 
@@ -133,8 +134,27 @@ Lambda.se <- array(SE[1: (p*m) ],dim=c(p,m))
 
 Psi.se <- SE[(p*m+1):Nq]
 
+##### SEs for commuanalites
+
+Lambda.I <- array(seq(from=1,to=p*m),dim=c(p,m))
+Com.se <- rep(0,p)
+
+for (j in 1:p) {
+ v.temp = Lambda[j,1:m]
+ Cov.temp = matrix(0,m,m)
+  for (tj in 1:m) {
+    for (ti in 1:m) {
+     Cov.temp[ti,tj] = Sandwich[Lambda.I[j,ti],Lambda.I[j,tj]]
+   } # ti
+  } # tj
+   Com.se [j] = t(v.temp) %*% Cov.temp %*% v.temp
+} # j
+
+   Com.se = sqrt(Com.se/(N-1))
+#####
+
 ##
-list(Lambda.se = Lambda.se,  Psi.se = Psi.se)
+list(Lambda.se = Lambda.se,  Psi.se = Psi.se, Com.se = Com.se)
 
 } # orth.se.augmt
 
