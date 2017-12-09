@@ -1,18 +1,12 @@
-### 2016-06-03, Friday, Guangjian Zhang
-### xpstQ stands for extended partially specified target, oblique rotation.
-
-
 
 
 ###########################################################################
 ### The function "GPFoblq.RCPhi" conduct oblique rotation with targets specified for factor correlations.
 ### The function is modified from "GPFoblq" in the R package "GPArotation",
-### 2016-03-16, Guangjian Zhang
-### Change the function name from GPFoblq.RCPhi to xpstQ
 
 
 xpstQ = function (A, Tmat = diag(ncol(A)), normalize = FALSE, eps = 1e-05, 
-    maxit = 1000, method = "quartimin", methodArgs = NULL, PhiWeight = NULL, PhiTarget = NULL) 
+    maxit = 1000, method = "quartimin", methodArgs = NULL, PhiWeight = NULL, PhiTarget = NULL, wxt2 = 1e0) 
 {
 
 # A(p,m), the unrotated factor loading matrix, Input
@@ -24,7 +18,7 @@ xpstQ = function (A, Tmat = diag(ncol(A)), normalize = FALSE, eps = 1e-05,
 # methodArgs, character, the target matrix and the weight matrix for factor loadings, Input
 # PhiWeight(m,m), the weight matrix for factor correlations, Input
 # PhiTarget(m,m), the target matrix for factor correlations, Input
-
+# wxt2 = 1e0, the weight controling the contribution of phi toward to the whole target criterion function
 
 # Loadings (p,m), the rotated factor loading matrix, Output
 # Phi (m,m), the rotated factor correlation matrix, Output
@@ -49,14 +43,13 @@ vgQ.pst <- function(L, W=NULL, Target=NULL){
 
 ### The function "vgQ.pstPhi" allows targets specified for factor correlations.
 ### The function is modified from vgQ.pst in the R package "GPArotation"
-### 2016-03-16, Guangjian Zhang
 
-vgQ.pstPhi <- function(Transform, PhiW=NULL, PhiTarget=NULL){
+vgQ.pstPhi <- function(Transform, PhiW=NULL, PhiTarget=NULL, wxt2 = 1e0){
 
 # Transform(m:m), the T matrix, defined as in Jennrich2002Psychometrika, Input
 # PhiW(m,m), the weight matrix for Phi, input
 # PhiTarget(m,m), the target matrix for Phi, Input
-
+# wxt2 = 1e0, the weight controling the contribution of phi toward to the whole target criterion function, input
 
 # dQ2T(m,m), the derivatives of the rotation crtieria with regard to T, Output
 # f.Phi, the rotation criterion function value for Phi, only the UPPER triangular elements are considered, Output
@@ -96,8 +89,8 @@ vgQ.pstPhi <- function(Transform, PhiW=NULL, PhiTarget=NULL){
 
 
 
-   list(dQ2T = dQ2T, 
-        f.Phi = f.Phi,
+   list(dQ2T = dQ2T * wxt2, 
+        f.Phi = f.Phi * wxt2,
         Method=Method)
 } # vgQ.pstPhi
 #-------------------------------------------------------------------------------------
@@ -112,17 +105,17 @@ vgQ.pstPhi <- function(Transform, PhiW=NULL, PhiTarget=NULL){
         A <- A/W
     }
     al <- 1
-    L <- A %*% t(solve(Tmat))                              # 2016-03-16, GZ
-    Method <- paste("vgQ", method, sep = ".")              # 2016-03-16, GZ
-    VgQ <- do.call(Method, append(list(L), methodArgs))    # 2016-03-16, GZ
-    G1 <- -t(t(L) %*% VgQ$Gq %*% solve(Tmat))               # 2016-03-16, GZ
-    f1 <- VgQ$f                                             # 2016-03-16, GZ
-    VgQ.2 = vgQ.pstPhi(Tmat, PhiWeight, PhiTarget)          #  2016-03-16, GZ
-    f = f1 + VgQ.2$f.Phi                                    #  2016-03-16, GZ
-    G = G1 + VgQ.2$dQ2T                                     # 2016-03-16, GZ
+    L <- A %*% t(solve(Tmat))                              
+    Method <- paste("vgQ", method, sep = ".")              
+    VgQ <- do.call(Method, append(list(L), methodArgs))    
+    G1 <- -t(t(L) %*% VgQ$Gq %*% solve(Tmat))              
+    f1 <- VgQ$f                                            
+    VgQ.2 = vgQ.pstPhi(Tmat, PhiWeight, PhiTarget,wxt2)    
+    f = f1 + VgQ.2$f.Phi                                   
+    G = G1 + VgQ.2$dQ2T                                    
     Table <- NULL
-    VgQt <- do.call(Method, append(list(L), methodArgs))   # 2016-03-16, GZ
-    VgQ.2 = vgQ.pstPhi(Tmat, PhiWeight, PhiTarget)         # 2016-03-16, GZ
+    VgQt <- do.call(Method, append(list(L), methodArgs))   
+    VgQ.2 = vgQ.pstPhi(Tmat, PhiWeight, PhiTarget,wxt2)    
 
     for (iter in 0:maxit) {
         Gp <- G - Tmat %*% diag(c(rep(1, nrow(G)) %*% (Tmat * 
@@ -136,23 +129,23 @@ vgQ.pstPhi <- function(Transform, PhiW=NULL, PhiTarget=NULL){
             X <- Tmat - al * Gp
             v <- 1/sqrt(c(rep(1, nrow(X)) %*% X^2))
             Tmatt <- X %*% diag(v)
-            L <- A %*% t(solve(Tmatt))                            # 2016-03-16, GZ
-            VgQt <- do.call(Method, append(list(L), methodArgs))  # 2016-03-16, GZ
-           VgQ.2 = vgQ.pstPhi(Tmatt, PhiWeight, PhiTarget)          # 2016-03-16, GZ           
+            L <- A %*% t(solve(Tmatt))                            
+            VgQt <- do.call(Method, append(list(L), methodArgs))  
+           VgQ.2 = vgQ.pstPhi(Tmatt, PhiWeight, PhiTarget,wxt2)                  
 
 
-            improvement <- f - ( VgQt$f + VgQ.2$f.Phi )       # 2016-03-16, GZ
+            improvement <- f - ( VgQt$f + VgQ.2$f.Phi )     
             if (improvement > 0.5 * s^2 * al) 
                 break
             al <- al/2
         }
         Tmat <- Tmatt
-        f1 <- VgQt$f                                        # 2016-03-16, GZ
-        G1 <- -t(t(L) %*% VgQt$Gq %*% solve(Tmatt))         # 2016-03-16, GZ
+        f1 <- VgQt$f                                        
+        G1 <- -t(t(L) %*% VgQt$Gq %*% solve(Tmatt))         
 
-    VgQ.2 = vgQ.pstPhi(Tmatt, PhiWeight, PhiTarget)          # 2016-03-16, GZ 
-    f = f1 + VgQ.2$f.Phi                                    #  2016-03-16, GZ
-    G = G1 + VgQ.2$dQ2T                                     # 2016-03-16, GZ
+    VgQ.2 = vgQ.pstPhi(Tmatt, PhiWeight, PhiTarget,wxt2)     
+    f = f1 + VgQ.2$f.Phi                                    
+    G = G1 + VgQ.2$dQ2T                                     
 
 
     }

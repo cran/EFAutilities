@@ -6,8 +6,8 @@ The goal of EFAutilities is to provide a number of utilities functions for explo
 
 This package can be installed directly from CRAN:
 
-    install.packages("EFAutilities")
-    library(EFAutilities)
+install.packages("EFAutilities")
+library(EFAutilities)
 
 
 
@@ -15,9 +15,9 @@ This package can be installed directly from CRAN:
 
 Examples using the data sets included in the packages:
 
-    data("CPAI537")                   # Chinese personality assessment inventory (N = 537)
+data("CPAI537")                   # Chinese personality assessment inventory (N = 537)
 
-    efa(x=CPAI537,factors=4, fm='ml') # normal, ml, oblique, CF-varimax, information, merror='NO'
+efa(x=CPAI537,factors=4, fm='ml') # normal, ml, oblique, CF-varimax, information, merror='NO'
 ```R
 ...
 ```

@@ -1,18 +1,8 @@
-#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions
-#### 2016-06-02, Thursday, Guangjian Zhang
 
 
 oblq.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
-                          PhiWeight = NULL, PhiTarget = NULL, u.r = NULL) {
+                          PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, wxt2=1e0) {
 
-# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
-# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/OblqDerivatives20160613.R')
-
-
-
-# We assume that the manifest variables are normally distributed for the time being.
 
 if (is.null(rotation)) stop ("No rotaton criterion is specified for numberical approximation")
 if ((rotation=='geomin') & (is.null(geomin.delta))) geomin.delta = 0.01
@@ -34,18 +24,6 @@ if (modelerror== 'NO') Rsample = PM
 
 if (is.null(u.r)) u.r = EliU(Rsample)
 
-# if (is.null(u.r)) {
-
-# if (modelerror== 'YES') {
-#  u.r = EliU(Rsample) 
-#} else if (modelerror == 'NO') {
-#  u.r = EliU(PM)
-#} else {
-# stop("Model Error option is inappropriately specified.")
-#}
-# } ## (u.r == NULL)
-
-##
 
 if (extraction == 'ml') {
 
@@ -91,7 +69,7 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normal
 
 } else if (rotation=='xtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget )
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',normalize,MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2) # 2017-11-28, GZ!
 
 
 } else {

@@ -62,15 +62,13 @@
 
 
 
-
-
-efa <- function(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL, dist='normal', fm='ols', rtype='oblique', rotation='CF-varimax', normalize=FALSE, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
-                          PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, se='information', LConfid=c(0.95,0.90), CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES') {
+efa <- function(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL, dist='normal', fm='ols', rtype='oblique', rotation='CF-varimax', normalize=FALSE, maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
+                          PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, se='information', LConfid=c(0.95,0.90), CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0) {
 
 
 ##--------------------------------------------------------------------------------------------------------
 Make.Rot.Args <- function(rtype,rotation,normalize,p,m, geomin.delta, MTarget, MWeight,
-                          PhiWeight, PhiTarget,transformation=NULL) {
+                          PhiWeight, PhiTarget,wxt2=1e0,transformation=NULL) {
 
 
 if ((rotation=='geomin') & (is.null(geomin.delta))) geomin.delta = 0.01
@@ -83,33 +81,33 @@ if (rtype=='oblique') {
   if (rotation=='CF-varimax') {
 
   fnames = 'cfQ'
-  Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else if (rotation=='CF-quartimax') {
 
   fnames = 'cfQ'
-  Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else if (rotation=='geomin') {
 
 
   fnames = 'geominQ'
-  Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, eps=1e-6, maxit=maxit)   
 
 
   } else if (rotation=='target') {
 
   fnames = 'pstQ'
-  Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, normalize=normalize, eps=1e-6, maxit=maxit)   
 
 
   } else if (rotation=='xtarget') {
 
-
+  
     fnames = 'xpstQ'
-    Rot.Args <- list(Tmat=transformation, normalize=FALSE, eps=1e-6, maxit=1000,
-                     method="pst",methodArgs = list(W = MWeight, Target = MTarget),PhiWeight = PhiWeight, PhiTarget = PhiTarget)
-
+    Rot.Args <- list(Tmat=transformation, normalize=normalize, eps=1e-6, maxit=maxit,
+                     method="pst",methodArgs = list(W = MWeight, Target = MTarget),PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2)   
+    
 
   } else {
   stop (paste(rotation, ' has not been implemented yet.'))
@@ -123,24 +121,24 @@ if (rtype=='oblique') {
   if (rotation=='CF-varimax') {
 
   fnames = 'cfT'
-  Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else if (rotation=='CF-quartimax') {
 
   fnames = 'cfT'
-  Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else if (rotation=='geomin') {
 
 
   fnames = 'geominT'
-  Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, eps=1e-6, maxit=maxit)   
 
 
   } else if (rotation=='target') {
 
   fnames = 'pstQT'
-  Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, normalize=normalize, eps=1e-6, maxit=1000)
+  Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else {
   stop (paste(rotation, ' has not been implemented yet.'))
@@ -158,7 +156,7 @@ list(fnames = fnames, Rot.Args = Rot.Args)
 
 
 Compute.se <- function (x,R0, n, rotated, phi, dist, fm, rtype, rotation, normalize, geomin.delta, MTarget, MWeight,
-                          PhiWeight, PhiTarget, se, confid,Ib, FE.Arg, Rot.Controls) {
+                          PhiWeight, PhiTarget, se, confid,Ib, FE.Arg, Rot.Controls,wxt2=1e0) {
 
 
 if (se=='information') {
@@ -167,21 +165,21 @@ if (se=='information') {
 
   if (rtype=='oblique') {
 
-  analytic.se = oblq.se.augmt(Lambda = rotated, Phi = phi, Rsample=R0, N=n, extraction=fm,
+  analytic.se = oblq.se.augmt(Lambda = rotated, Phi = phi, Rsample=R0, N=n, extraction=fm, 
                               normalize=normalize, rotation=rotation, modelerror='NO', geomin.delta = geomin.delta,
-                              MTarget=MTarget, MWeight=MWeight, PhiWeight=PhiWeight, PhiTarget=PhiTarget)
+                              MTarget=MTarget, MWeight=MWeight, PhiWeight=PhiWeight, PhiTarget=PhiTarget,wxt2=wxt2) 
   } else { # orthogonal
 
-  analytic.se = orth.se.augmt(Lambda = rotated, Rsample=R0, N=n, extraction=fm,
+  analytic.se = orth.se.augmt(Lambda = rotated, Rsample=R0, N=n, extraction=fm, 
                              normalize=normalize, rotation=rotation, modelerror='NO', geomin.delta = geomin.delta,
-                             MTarget=MTarget, MWeight=MWeight)
+                             MTarget=MTarget, MWeight=MWeight) 
   } # orthogonal
 
 
 
 } else if (se == 'sandwich') {
 
-  # se == Sandwich deals with non-normal distributions
+  # se == Sandwich deals with non-normal distributions 
 
   if (dist=='continuous') {
     u.r = AsyCovCorr(x)$asc
@@ -191,20 +189,20 @@ if (se=='information') {
 
   } else if (dist=='ordinal') {
     u.r = get.RGamma(x, gamma=TRUE)$GammaR
-
-  }
+    
+  } 
 
 
   if (rtype=='oblique') {
-
-  analytic.se = oblq.se.augmt(Lambda = rotated, Phi = phi, Rsample=R0, N=n, extraction=fm,
+ 
+  analytic.se = oblq.se.augmt(Lambda = rotated, Phi = phi, Rsample=R0, N=n, extraction=fm, 
                               normalize=normalize, rotation=rotation, modelerror=merror, geomin.delta = geomin.delta,
-                              MTarget=MTarget, MWeight=MWeight, PhiWeight=PhiWeight, PhiTarget=PhiTarget,u.r=u.r)
+                              MTarget=MTarget, MWeight=MWeight, PhiWeight=PhiWeight, PhiTarget=PhiTarget,u.r=u.r,wxt2=wxt2) 
   } else { # orthogonal
 
-  analytic.se = orth.se.augmt(Lambda = rotated, Rsample=R0, N=n, extraction=fm,
+  analytic.se = orth.se.augmt(Lambda = rotated, Rsample=R0, N=n, extraction=fm, 
                              normalize=normalize, rotation=rotation, modelerror=merror, geomin.delta = geomin.delta,
-                             MTarget=MTarget, MWeight=MWeight, u.r = u.r)
+                             MTarget=MTarget, MWeight=MWeight, u.r = u.r) 
   } # orthogonal
 
 
@@ -229,6 +227,10 @@ Boot = BootJack(x,rotated,Boot.Arg) # Remove a bug 2016-08-27, GZ
 
 
 #-------------------------------------------------------------------------------------------------------
+
+# check input arguments
+# external functions: get.RGamma, fa.extract
+
 
 confid = LConfid[1]
 
@@ -256,7 +258,7 @@ R0 = cor(x)
 
 if (!(is.null(covmat))) {
 
-if( min(abs(R0 - covmat)) > 0.0001) message ('covmat is different from the one computed from the raw data! The one computed from raw data is used for EFA!')
+if( min(abs(R0 - covmat)) > 0.0001) message ('covmat is different from the one computed from the raw data! The one computed from raw data is used for EFA!') 
 
  } # if (!(is.null(covmat)))
 
@@ -266,7 +268,7 @@ if( min(abs(R0 - covmat)) > 0.0001) message ('covmat is different from the one c
   n = n.obs
 
   mvariance <- diag(covmat)
-
+  
 if (all(mvariance==1)) {
  R0 = covmat
 } else {
@@ -275,11 +277,11 @@ if (all(mvariance==1)) {
  msd = sqrt(mvariance)
  for (i in 1:p) {
   R0[i,1:p] = R0[i,1:p] / msd[i]
-  R0[1:p,i] = R0[1:p,i] / msd[i]
+  R0[1:p,i] = R0[1:p,i] / msd[i] 
   }
-} # if the input matrix is a covariance matrix
-
-
+} # if the input matrix is a covariance matrix 
+  
+    
 } ## is.null(x)
 
 ###### -------------------------------------------------
@@ -296,7 +298,7 @@ ev = eigen(R0)$values
 ## manifest variable names and factor names
 
 if (is.null(mnames)) {
-mnames = rep(" ", p)
+mnames = rep(" ", p)  
   for (i in 1:p) {
     mnames[i] = paste("MV",i,sep="")
   }
@@ -306,7 +308,7 @@ mnames = rep(" ", p)
 
 
 if (is.null(fnames)) {
-  fnames = rep(" ", factors)
+  fnames = rep(" ", factors)  
   for (i in 1:factors) {
     fnames[i] = paste("F",i,sep="")
   }
@@ -314,7 +316,7 @@ if (is.null(fnames)) {
   if (length(fnames) != factors) stop("The number of factor names is different from the number of factors!")
 }
 
-####
+#### 
 
 # extract m factors
 A.lst = fa.extract(R0,factors, extraction = fm)
@@ -323,41 +325,39 @@ FE.Arg <- list(factors=factors, extraction = fm)
 
 ######
 
-### 2017-08-08, adding test statistics
 
-# if (A.lst$heywood==0) {
 
 if (fm=='ml') {
   statistic = (n-1) * A.lst$f
-
+  
 } else if (fm=='ols') {
 
 if (dist=='continuous') {
   u.r = AsyCovCorr(x)$asc
-
+  
 } else if (dist=='ts') {
   u.r = TSCovCorr(x)$asc
-
+  
 } else if (dist=='ordinal') {
   u.r = get.RGamma(x, gamma=TRUE)$GammaR
-
+  
 } else if (dist=='normal') {
   u.r = EliU(R0)
-
+  
 }
   statistic = Compute.stat(R0,u.r,A.lst$Unrotated)$statistic
-
+  
   statistic = ifelse(is.nan(statistic), NaN, statistic*(n-1))
-
-
+  
+  
 } # ols
 
   if (is.nan(statistic)) {
     message('The EFA test statistic is invalid because the estimate of the asymptotic covariance matrix of correlations has negative eigenvalues.')
-
+    
     statistic = p*(p-1)/2
     ModelF = Model.Fit(statistic,fm,p,factors,n,LConfid[2])
-
+    
     ModelF$f.stat = NaN
     ModelF$RMSEA = NaN
     ModelF$p.perfect = NaN
@@ -367,11 +367,11 @@ if (dist=='continuous') {
     ModelF$ECVI = NaN
     ModelF$ECVI.l = NaN
     ModelF$ECVI.u = NaN
-
+    
    }else {
   ModelF = Model.Fit(statistic,fm,p,factors,n,LConfid[2])
   }
-
+  
 
 # factor rotation
 
@@ -379,20 +379,20 @@ if (factors > 1) {
 
 transformation = NULL
 if (rotation=='xtarget') {
-  if(rtype=='orthogonal') {
+  if(rtype=='orthogonal') { 
     rtype = 'oblique'
     message('xtarget requires oblique rotation.')
     }
-rotation = 'target'
-Rot.Controls <- Make.Rot.Args(rtype,rotation,normalize,p,factors,geomin.delta,MTarget, MWeight,PhiWeight, PhiTarget)
+rotation = 'target'  
+Rot.Controls <- Make.Rot.Args(rtype,rotation,normalize,p,factors,geomin.delta,MTarget, MWeight,PhiWeight, PhiTarget,wxt2)
 Lambda.lst = do.call (Rot.Controls$fnames, append(list(A.lst$Unrotated),Rot.Controls$Rot.Args))
 transformation = (t(A.lst$Unrotated) %*% A.lst$Unrotated) %*% solve(t(Lambda.lst$loadings) %*% A.lst$Unrotated)
 
 rotation = 'xtarget'
 
-} # rotation = 'target'
+} # rotation = 'xtarget'
 
-Rot.Controls <- Make.Rot.Args(rtype,rotation,normalize,p,factors,geomin.delta,MTarget, MWeight,PhiWeight, PhiTarget,transformation)
+Rot.Controls <- Make.Rot.Args(rtype,rotation,normalize,p,factors,geomin.delta,MTarget, MWeight,PhiWeight, PhiTarget,wxt2,transformation)
 Lambda.lst = do.call (Rot.Controls$fnames, append(list(A.lst$Unrotated),Rot.Controls$Rot.Args))
 
 
@@ -424,24 +424,24 @@ if (rtype=='oblique') Lambda.lst$Phi = M.out.temp[(p+1):(p+factors),1:factors]
 
 ########
 
+
 # standard errors
 
-## modify se if necessary
 if ( ( ! ( dist=='normal')) & (se =='information') ) {
   se = 'sandwich'
-  message('The fisher information SE estimates are only for normal data; Sandwich SEs are used for non-normal data.')
-}
+  message('The fisher information SE estimates are only for normal data; Sandwich SE are used for non-normal data.')
+} 
 
 
 if (  ( dist=='normal') & (se =='sandwich') ) {
   se = 'information'
   message('The fisher information SE estimates are computed for normal data.')
-}
+} 
 
 if (  ( (dist=='ordinal') | (dist=='ts')) & (se =='jackknife') ) {
   se = 'bootstrap'
   message('The jackknife SE estimates for ordinal data and time series data have not been developped yet; bootstrap SE estimates are computed instead.')
-}
+} 
 ###
 
 Phi = diag(factors)
@@ -449,22 +449,22 @@ Phi = diag(factors)
 
 if (factors > 1) {
   if (rtype == 'oblique') Phi = Lambda.lst$Phi
-
+  
   SE = Compute.se (x, R0, n, rotated=Lambda.lst$loadings, phi=Phi, dist, fm, rtype, rotation, normalize, geomin.delta, MTarget, MWeight,
-                          PhiWeight, PhiTarget, se, confid, Ib, FE.Arg, Rot.Controls)
+                          PhiWeight, PhiTarget, se, confid, Ib, FE.Arg, Rot.Controls,wxt2)
 } else {
 SE = Compute.se (x, R0, n, rotated=A.lst$Unrotated, phi=Phi, dist, fm, rtype='orthogonal', rotation='unrotated', normalize, geomin.delta, MTarget, MWeight,
-                          PhiWeight, PhiTarget, se, confid, Ib, FE.Arg, Rot.Controls)
+                          PhiWeight, PhiTarget, se, confid, Ib, FE.Arg, Rot.Controls,wxt2)
 }
 
 
 
 ## Outputs
-details = list(manifest=p,factors=factors, n.obs=n, dist=dist, fm=fm, rtype=rtype, rotation=rotation, normalize=normalize,
-           geomin.delta=geomin.delta, MTarget=MTarget, MWeight=MWeight,
+details = list(manifest=p,factors=factors, n.obs=n, dist=dist, fm=fm, rtype=rtype, rotation=rotation, normalize=normalize, 
+           geomin.delta=geomin.delta, wxt2=wxt2, MTarget=MTarget, MWeight=MWeight,
                           PhiWeight = PhiWeight, PhiTarget = PhiTarget, se=se, LConfid=LConfid, Ib=Ib)
 
-###
+### 
 
 unrotated = A.lst$Unrotated
 fdiscrepancy = A.lst$f
@@ -474,7 +474,7 @@ heywood = A.lst$heywood
 if (factors > 1) {
 rotated = Lambda.lst$loadings
 } else {
-rotated = A.lst$Unrotated}
+rotated = A.lst$Unrotated} 
 
 Phi = Phi
 
@@ -495,7 +495,7 @@ if (factors==1) {
   Phise = matrix(0, factors, factors)
 }
 
-#### compute confidence intervals
+#### 2017-08-08, compute confidence intervals
 
 alpha = 1 - LConfid[1]
 CI.lambda = CIs(rotated, rotatedse, alpha, type = 'lambda')
@@ -508,9 +508,11 @@ Philow = CI.Phi$LowerLimit
 Phiupper = CI.Phi$UpperLimit
 
 
-Phat = unrotated %*% t(unrotated)
+Phat = unrotated %*% t(unrotated) 
 Phat = Phat - diag(diag(Phat)) + diag(p)
 Residual = R0 - Phat
+
+
 
 
 
@@ -536,10 +538,11 @@ dimnames(Residual) = list(mnames,mnames)
 efaout = list(details = details, unrotated=unrotated,fdiscrepancy=fdiscrepancy,convergence=convergence,heywood=heywood, R0=R0, Phat=Phat, Residual=Residual,
               rotated=rotated,Phi=Phi, rotatedse=rotatedse, Phise= Phise, ModelF = ModelF, rotatedlow=rotatedlow, rotatedupper=rotatedupper, Philow=Philow, Phiupper=Phiupper)
 
-class(efaout) <- "efa"
+class(efaout) <- "efa" 
 
 return(efaout)
 
+# confidence intervals
 
 
 # output
@@ -555,80 +558,89 @@ return(efaout)
 
 } # efa
 
-
 print.efa <- function(x, ...) {
-    
-    cat("\nSummary of Analysis: \n")
-    cat("   Estimation Method:  ",x$details$fm,"\n")
-    cat("   Rotation Type:  ",x$details$rtype,"\n")
-    cat("   Rotation Criterion:  ",x$details$rotation,"\n")
-    cat("   Test Statistic:  ",round(x$ModelF$f.stat,3),"\n")
-    cat("   Degrees of Freedom:  ",x$ModelF$df,"\n")
-    cat("   P value for perfect fit:  ",round(x$ModelF$p.perfect,3),"\n")
-    
-    
-    cat("\nRotated Factor Loadings: \n")
-    print(round(x$rotated,3))
-    
-    cat("\nFactor Correlations: \n")
-    print(round(x$Phi,3))
-    
-    
-} # print.efa
 
+  cat("\nSummary of Analysis: \n")
+  cat("   Estimation Method:  ",x$details$fm,"\n")
+  cat("   Rotation Type:  ",x$details$rtype,"\n")  
+  cat("   Rotation Criterion:  ",x$details$rotation,"\n") 
+  cat("   Test Statistic:  ",round(x$ModelF$f.stat,3),"\n")
+  cat("   Degrees of Freedom:  ",x$ModelF$df,"\n")
+  cat("   P value for perfect fit:  ",round(x$ModelF$p.perfect,3),"\n")
+  
 
-# summary.efa <- function(object, ...) {
-#
-#   cat("\nAnalysis Details: \n")
-#   cat("   Number of Manifest Variable:  ", object$details$manifest, "\n")
-#   cat("   Number of Factors:  ",object$details$factors,"\n")
-#   cat("   Sample Size:  ",object$details$n.obs,"\n")
-#   cat("   Manifest Variable Distribution:  ",object$details$dist,"\n")
-#   cat("   Estimation Method:  ",object$details$fm,"\n")
-#   cat("   Rotation Type:  ",object$details$rtype,"\n")
-#   cat("   Rotation Criterion:  ",object$details$rotation,"\n")
-#   cat("   Rotation Standardization:  ",object$details$normalize,"\n")
-#   cat("   Standard Error:  ",object$details$se,"\n")
-#
-#
-#   cat("\nMeasures of Fit \n")
-#   cat(" Root Mean Square Error of Approximation, RMSEA \n")
-#   cat("   Point estimate:  ",round(object$ModelF$RMSEA,3),"\n")
-#   cat("  ",object$details$LConfid[2]*100,"% Confidence Intervals:  (",round(object$ModelF$RMSEA.l,3), ",",round(object$ModelF$RMSEA.u,3), ") \n")
-#   cat(" Test Statistic:  ",round(object$ModelF$f.stat,3),"\n")
-#   cat("   Degrees of Freedom:  ",object$ModelF$df,"\n")
-#   cat("   P value for perfect fit:  ",round(object$ModelF$p.perfect,3),"\n")
-#   cat("   P value for close fit:  ",round(object$ModelF$p.close,3),"\n")
-#
-#
-#
-#   cat("\nUnrotated Factor Loadings: \n")
-#   print(round(object$unrotated,3))
-#
-#   cat("\nRotated Factor Loadings: \n")
-#   print(round(object$rotated,3))
-#
-#   cat("\nFactor Correlations: \n")
-#   print(round(object$Phi,3))
-#
-#   cat("\nSE for rotated Factor Loadings: \n")
-#   print(round(object$rotatedse,3))
-#
-#   cat("\nSE for Factor Correlations: \n")
-#   print(round(object$Phise,3))
-#
-#   cat("\nLower Bounds of", object$details$LConfid[1]*100,"% CIs for Rotated Factor Loadings: \n")
-#   print(round(object$rotatedlow,3))
-#
-#   cat("\nUpper Bounds of", object$details$LConfid[1]*100,"% CIs for Rotated Factor Loadings: \n")
-#   print(round(object$rotatedupper,3))
-#
-#   cat("\nLower Bounds of", object$details$LConfid[1]*100,"% CIs for Factor Correlations: \n")
-#   print(round(object$Philow,3))
-#
-#   cat("\nUpper Bounds of", object$details$LConfid[1]*100,"% CIs for Factor Correlations: \n")
-#   print(round(object$Phiupper,3))
-   
-   
-   
-#} # print.summary.efa
+  cat("\nRotated Factor Loadings: \n")
+  print(round(x$rotated,3))
+  
+  cat("\nFactor Correlations: \n")
+  print(round(x$Phi,3))
+  
+
+} # print.efa 
+
+summary.efa <- function(object, ...){
+
+res <- object
+
+class(res) <- "summary.efa"
+
+return(res)
+
+} # summary.efa
+
+print.summary.efa <- function(x, ...) {
+
+  cat("\nAnalysis Details: \n")
+  cat("   Number of Manifest Variable:  ", x$details$manifest, "\n")
+  cat("   Number of Factors:  ",x$details$factors,"\n")
+  cat("   Sample Size:  ",x$details$n.obs,"\n")
+  cat("   Manifest Variable Distribution:  ",x$details$dist,"\n")  
+  cat("   Estimation Method:  ",x$details$fm,"\n")
+  cat("   Rotation Type:  ",x$details$rtype,"\n")  
+  cat("   Rotation Criterion:  ",x$details$rotation,"\n") 
+  cat("   Rotation Standardization:  ",x$details$normalize,"\n")   
+  cat("   Standard Error:  ",x$details$se,"\n")  
+  
+  
+  cat("\nMeasures of Fit \n")
+  cat(" Root Mean Square Error of Approximation, RMSEA \n")
+  cat("   Point estimate:  ",round(x$ModelF$RMSEA,3),"\n")
+  cat("  ",x$details$LConfid[2]*100,"% Confidence Intervals:  (",round(x$ModelF$RMSEA.l,3), ",",round(x$ModelF$RMSEA.u,3), ") \n")
+  cat(" Test Statistic:  ",round(x$ModelF$f.stat,3),"\n")
+  cat("   Degrees of Freedom:  ",x$ModelF$df,"\n")
+  cat("   P value for perfect fit:  ",round(x$ModelF$p.perfect,3),"\n")
+  cat("   P value for close fit:  ",round(x$ModelF$p.close,3),"\n")
+  
+  
+
+  cat("\nUnrotated Factor Loadings: \n")
+  print(round(x$unrotated,3))
+  
+  cat("\nRotated Factor Loadings: \n")
+  print(round(x$rotated,3))
+  
+  cat("\nFactor Correlations: \n")
+  print(round(x$Phi,3))
+  
+  cat("\nSE for rotated Factor Loadings: \n")
+  print(round(x$rotatedse,3))
+  
+  cat("\nSE for Factor Correlations: \n")
+  print(round(x$Phise,3))
+  
+  cat("\nLower Bounds of", x$details$LConfid[1]*100,"% CIs for Rotated Factor Loadings: \n")
+  print(round(x$rotatedlow,3))
+  
+  cat("\nUpper Bounds of", x$details$LConfid[1]*100,"% CIs for Rotated Factor Loadings: \n")
+  print(round(x$rotatedupper,3))
+  
+  cat("\nLower Bounds of", x$details$LConfid[1]*100,"% CIs for Factor Correlations: \n")
+  print(round(x$Philow,3))
+  
+  cat("\nUpper Bounds of", x$details$LConfid[1]*100,"% CIs for Factor Correlations: \n")
+  print(round(x$Phiupper,3))
+  
+  
+  
+} # print.summary.efa
+

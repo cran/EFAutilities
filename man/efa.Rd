@@ -12,10 +12,12 @@ Performs exploratory factor analysis under a variety of conditions. In particula
 \usage{
  efa(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL, dist='normal', 
      fm='ols', rtype='oblique', rotation='CF-varimax', 
-     normalize=FALSE, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
+     normalize=FALSE, maxit=1000, geomin.delta=NULL, 
+     MTarget=NULL, MWeight=NULL,
      PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, 
      se='information', LConfid=c(0.95,0.90), CItype='pse', 
-     Ib=2000, mnames=NULL, fnames=NULL, merror='YES')
+     Ib=2000, mnames=NULL, fnames=NULL, merror='YES',
+     wxt2 = 1e0)
 }
 
 \arguments{
@@ -28,8 +30,9 @@ Performs exploratory factor analysis under a variety of conditions. In particula
                'ts' stands for distributions for time-series data.}  
   \item{fm}{Factor extraction methods: 'ols' (default) and 'ml'} 
   \item{rtype}{Factor rotation types: 'oblique' (default) and 'orthogonal'. Factors are correlated in 'oblique' rotation, and they are uncorrelated in 'orthogonal' rotation.}
-  \item{rotation}{ Factor rotation criteria: 'CF-varimax' (default), 'CF-quartimax', 'target', and 'geomin'. These rotation criteria can be used in both orthogonal and oblique rotation. In addition, a fifth rotation criteria option 'xtarget' is available for oblique rotation.}
+  \item{rotation}{ Factor rotation criteria: 'CF-varimax' (default), 'CF-quartimax', 'target', and 'geomin'. These rotation criteria can be used in both orthogonal and oblique rotation. In addition, a fifth rotation criterion 'xtarget'(extended target) rotation is available for oblique rotation. The extended target rotation allows targets to be specified on both factor loadings and factor correlations.}
   \item{normalize}{Row standardization in factor rotation: FALSE (default) and TRUE (Kaiser standardization).} 
+  \item{maxit}{Maximum number of iterations in factor rotation: 1000 (default)} 
   \item{geomin.delta}{The controlling parameter in Geomin rotation, 0.01 as the default value.}
   \item{MTarget}{The p-by-m target matrix for the factor loading matrix in target rotation and xtarget rotation.}
   \item{MWeight}{The p-by-m weight matrix for the factor loading matrix in target rotation and xtarget rotation.}
@@ -43,6 +46,7 @@ Performs exploratory factor analysis under a variety of conditions. In particula
   \item{mnames}{Names of p manifest variables: Null (default)} 
   \item{fnames}{Names of m factors: Null (default)}
   \item{merror}{ Model error: 'YES' (default) or 'NO'. In general, we expect our model is a parisonmious representation to the complex real world. Thus, some amount of model error is unavailable. When merror = 'NO', the efa model is assumed to fit perfectly in the population.}
+  \item{wxt2}{The relative weight for factor correlations in 'xtarget' (extended target) rotation: 1 (default)}
 }
 
 

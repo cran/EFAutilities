@@ -1,6 +1,3 @@
-### 2016-06-02, Thursday, Guangjian Zhang
-### It contains two external functions Extended.CF.Family.c.2.LPhi and Derivative.Constraints.Numerical
-
 
 Extended.CF.Family.c.2.LPhi <- function(Lambda,Phi,rotation=NULL,normalize=FALSE) {
 
@@ -42,7 +39,6 @@ Extended.CF.Family.c.2.LPhi <- function(Lambda,Phi,rotation=NULL,normalize=FALSE
 
 ### The function Derivative.Constraints.Loadings implements Equation 53 
 ### of Jennrich, 1973, Psychometrika, 38, 593-604
-### Guangjian Zhang, 2009-06-17, Wednesday
 
 Derivative.Constraints.Loadings <- function (k1,k2,k3,k4,Lambda,Phi, M.Matrix ) {
 
@@ -90,7 +86,6 @@ Result.Loadings
 
 ### The function Derivative.Constraints.Phi implements Equation 54 
 ### of Jennrich, 1973, Psychometrika, 38, 593-604
-### Guangjian Zhang, 2009-06-17, Wednesday
 
 Derivative.Constraints.Phi <- function (k1,k2,k3,k4,Lambda,Phi, M.Matrix ) {
 
@@ -255,7 +250,7 @@ d.Con.Parameters
 ########################################################################
 
 Derivative.Constraints.Numerical <- function (Lambda, Phi, rotation=NULL,normalize=FALSE,geomin.delta = NULL, 
-                                              MWeight=NULL, MTarget=NULL,PhiWeight = NULL, PhiTarget = NULL) {
+                                              MWeight=NULL, MTarget=NULL,PhiWeight = NULL, PhiTarget = NULL, wxt2=NULL) {
 
 
 ### External function: Derivative.Constraints.Phi.20150526
@@ -292,8 +287,6 @@ vgQ.geomin <- function(L, delta=.01){
 ###----------------------------------------------------------------------------
 ### The function Derivative.Constraints.Phi implements Equation 54 
 ### of Jennrich, 1973, Psychometrika, 38, 593-604
-### Guangjian Zhang, 2009-06-17, Wednesday
-### Guangjian Zhang, 2015-05-26, Tuesday, it takes dQ.L as an input argument
 
 Derivative.Constraints.Phi.20150526 <- function (Lambda,Phi, dQ.L) {
 
@@ -335,13 +328,8 @@ Result.Phi
 
 ### It is modified from the original function Derivative.Constraints.Phi.20150526 
 ### which immplements Equation 54 of Jennrich, 1973, Psychometrika, 38, 593-604
-### Guangjian Zhang, 2009-06-17, Wednesday
-### Guangjian Zhang, 2015-05-26, Tuesday, it takes dQ.L as an input argument
-### Guangjian Zhang, 2016-03-18, Friday, to accommodate RCPhi
-### Guangjian Zhang, 2017-05-25, Thursday, replace analytic derivatives with numerical derivatives
 
-
-DCon.RCPhi2.Phi.20170525 <- function (Lambda,Phi, dQ.L, PhiWeight,PhiTarget) {
+DCon.RCPhi2.Phi.20170525 <- function (Lambda,Phi, dQ.L, PhiWeight,PhiTarget, wxt2 = 1e0) {
 
 # Lambda (p,m), the roated factor loading matrix
 # Phi (m,m), the rotated factor correlations matrix
@@ -376,13 +364,11 @@ for (l in 2:m) {
     Phi.negative = Phi - dZ
 
 
-    # The purpose of this line to evaluate numerical derivatives without having to invert Phi
-    # solve is more computationally stable than ginv
 
 
 
-    Results [1:m,1:m,k,l] = ( ( Temp.first %*%(solve(Phi.positive)) - 2*(Phi.positive - PhiTarget)* PhiWeight ) -
-                                      ( Temp.first %*%(solve(Phi.negative)) - 2*(Phi.negative - PhiTarget)* PhiWeight ) ) / (2*eps)
+    Results [1:m,1:m,k,l] = ( ( Temp.first %*%(solve(Phi.positive)) - 2 * wxt2 * (Phi.positive - PhiTarget)* PhiWeight ) -
+                                      ( Temp.first %*%(solve(Phi.negative)) - 2 * wxt2 * (Phi.negative - PhiTarget)* PhiWeight ) ) / (2*eps)
     Results [1:m,1:m,l,k] = Results [1:m,1:m,k,l] # 2017-05-26, GZ
 
    }
@@ -420,8 +406,6 @@ h.onehalf.inverse = (h.half.inverse)**3
 
 
 
-### The following code was modified on 2015-05-26 ###
-### The goal was to compute numerical derivatives of constraints WRT factor loadings
 
 d.Con.Loading <- array (rep(0,m*m*p*m), dim=c(m,m,p,m))
 
@@ -436,8 +420,6 @@ for (j in 1:m) {
     dZ = Z
     dZ[i,j] = eps
 
-    # The purpose of this line to evaluate numerical derivatives without having to invert Phi
-    # solve is more computationally stable than ginv
 
 
 
@@ -470,7 +452,7 @@ if (rotation == 'geomin') {
     dQ.L = vgQ.pst(Lambda, MWeight, MTarget) $ Gq
 
 } else if (rotation == 'xtarget') {
-    dQ.L = vgQ.pst(Lambda, MWeight, MTarget) $ Gq  # 2016-06-03, GZ 
+    dQ.L = vgQ.pst(Lambda, MWeight, MTarget) $ Gq   
 
 
 } else {
@@ -480,8 +462,8 @@ if (rotation == 'geomin') {
 
 
 if (rotation == 'xtarget') {
-# d.Con.Phi = DCon.RCPhi2.Phi.20160318 (Lambda,Phi, dQ.L, PhiWeight)  ### 2016-06-03, GZ
-  d.Con.Phi = DCon.RCPhi2.Phi.20170525 (Lambda,Phi, dQ.L, PhiWeight, PhiTarget)  ### 2017-05-25, GZ
+  if (is.null(wxt2)) wxt2 = 1e0
+  d.Con.Phi = DCon.RCPhi2.Phi.20170525 (Lambda,Phi, dQ.L, PhiWeight, PhiTarget, wxt2 = wxt2)  ### 2017-05-25, GZ ## 2017-11-28, GZ
 } else {
 d.Con.Phi = Derivative.Constraints.Phi.20150526 (Lambda, Phi,dQ.L)
 }
@@ -494,7 +476,7 @@ ICon = 0
 for (j in 1:m) {
   for (i in 1:m)  {
 
-     if (i != j) { # We need to worry about the off-diagonal elements of the Constraint matrix
+     if (i != j) { 
        
       ICon = ICon + 1
       
