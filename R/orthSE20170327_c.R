@@ -1,20 +1,10 @@
 
-#### 2017-03-27, Monday, Guangjian Zhang, standard errors for commuanalities
-#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions. 
-#### 2016-06-02, Thursday, Guangjian Zhang
-
 
 orth.se.augmt <- function(Lambda, Rsample, N, extraction, rotation, normalize, modelerror, 
 geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL) {
 
-# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
-# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/OrthDerivatives20160610.R')
 
 
-
-# We assume that the manifest variables are normally distributed for the time being.
 
 if (is.null(rotation)) stop ("No rotaton criterion is specified for numberical approximation")
 if ((rotation=='geomin') & (is.null(geomin.delta))) geomin.delta = 0.01
@@ -38,17 +28,6 @@ if (modelerror== 'NO') Rsample = PM
 if (is.null(u.r)) u.r = EliU(Rsample)
 
 
-# if (modelerror== 'YES') {
-#  u.r = EliU(Rsample) 
-# } else if (modelerror == 'NO') {
-#   u.r = EliU(PM)
-# } else {
-#  stop("Model Error option is inappropriately specified.")
-# }
-
-
-#### dg2r and Hessian include factor loadings, factor correlations and unique variances
-#### factor correlations need to be removed since the function deals with orthogonal rotation
 
 if (extraction == 'ml') {
 
@@ -107,9 +86,6 @@ Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical(Lambda,extraction)
 
 ### 
 
-### Hessian matrix includes factor loadings, factor correlations, and unique variances
-### The following code is to remove the part of factor correlations since the function deals with 
-### ORTHOGONAL rotation
 Temp.Bigger = matrix(0,(Nq+Nc),(Nq+Nc))
 Temp.Bigger[1:(p*m),1:(p*m)] = Hessian [1:(p*m),1:(p*m)]
 Temp.Bigger[(p*m + 1):(p*m + p), 1:(p*m)] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p),1:(p*m)]

@@ -14,6 +14,7 @@
 # on the success of the aligning procedure.
 
 
+
 Align.Matrix <- function(Order.Matrix, Input.Matrix, Weight.Matrix=NULL) {
 
 #--------------------------------------------------------
@@ -76,7 +77,9 @@ for (i in 1:m) {
 
 # Step 3, find the best match betwen the Order.Matrix and Loading.Matrix
 
-if (prod(Quick.Match) == Factorial.m ) {
+Quick.Success = sum(abs(sort(Quick.Match) - seq(1,m)))
+
+if (Quick.Success == 0 ) {
   Final.Match = Quick.Match
 } else {
 

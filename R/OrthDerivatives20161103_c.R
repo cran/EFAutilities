@@ -1,7 +1,3 @@
-### 2016-06-02, Thursday, Guangjian Zhang
-### It contains two external functions Extended.CF.Family.c.2.LPhi and Derivative.Constraints.Numerical
-
-
 
 ########################################################################
 
@@ -120,8 +116,6 @@ h.onehalf.inverse = (h.half.inverse)**3
 
 } # (normalize)
 
-### The following code was modified on 2015-05-26 ###
-### The goal was to compute numerical derivatives of constraints WRT factor loadings
 
 d.Con.Parameters = matrix(0, Nc , Nq)
 
@@ -142,9 +136,6 @@ for (j in 1:m) {
   for (i in 1:p) {
     dZ = Z
     dZ[i,j] = eps
-
-    # The purpose of this line to evaluate numerical derivatives without having to invert Phi
-    # solve is more computationally stable than ginv
 
 
 

@@ -1,12 +1,5 @@
-# The function is modified to accommodate different rotation methods.
-
-
-# The file is modified to accommodate the changes to made to fa.extract.
-# Guangjian Zhang, 2016-08-11, Thursday.
-
 
 # The function BootJack compute SE estimates using the bootstrap or jackknife method.
-# Guangjian Zhang, 2016-08-09, Tuesday.
 
 
 BootJack <- function(X.raw, M.order, BJ.Arg) {
@@ -14,8 +7,8 @@ BootJack <- function(X.raw, M.order, BJ.Arg) {
 # Two internal functions Get.MR and fact.extract
 # It requires two external functions and a R package.
 
-# source('E:/CurrentSimulation/RCPhi/Alignment20160616.R')
-# source('E:/CurrentSimulation/RCPhi/EFAEstimation20160811.R')
+# source('Alignment20160616.R')
+# source('EFAEstimation20160811.R')
 # library(GPArotation)
 
 
@@ -106,9 +99,9 @@ m = ncol(M.order)
 ### Step 1: get bootstrap / jackknife manifest variable correlation matrices ###
 
 if (bj == 'bootstrap') {
-Boot.R = Get.MR(X.raw,bj='bootstrap',Ib = Ib) ## Lauren 2016-10-06
+Boot.R = Get.MR(X.raw,bj='bootstrap',Ib = Ib) ## 
 } else {
-Jack.R = Get.MR(X.raw,bj='jackknife') ## Lauren 2016-10-06
+Jack.R = Get.MR(X.raw,bj='jackknife') ## 
 }
 
 ### Step 2: extract factors   ###
@@ -143,10 +136,10 @@ Total.Phi <- array(rep(0,Ib*m*m),dim=c(Ib,m,m))
 
 for (i in 1:Ib) {
 
-Test = do.call(fnames,append(list(Total.A[i,1:p,1:m]),Rotation.Arg)) # 2016-08-16, GZ
+Test = do.call(fnames,append(list(Total.A[i,1:p,1:m]),Rotation.Arg)) 
 Total.LPhi[i,1:p,1:m] = Test$loadings[1:p,1:m]
 Total.LPhi[i,(p+1):(p+m),1:m] = diag(m)
-if (rtype == 'oblique') Total.LPhi[i,(p+1):(p+m),1:m] = Test$Phi[1:m,1:m]         # 2016-08-16, GZ  
+if (rtype == 'oblique') Total.LPhi[i,(p+1):(p+m),1:m] = Test$Phi[1:m,1:m]           
 if (! Test$convergence) Total.Index[i,4] = 1 
 }
 

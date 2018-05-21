@@ -4,7 +4,6 @@ AsyCovCorr <- function(X) {
 ## described in Browne & Shapiro (1986), the asymptotic covariance matrix of sample correlation coefficients under
 ## general conditions. Linear Algebra and its applications, 82, 169-176.
 ## Equation (3.2) on page 171.
-## Guangjian Zhang, 2016-06-20, Monday.
 
 
 p = ncol(X)

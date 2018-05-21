@@ -1,10 +1,5 @@
 # TSCovCorr computes the asymptotic covariance matrix of lagged correlations
-# Guangjian Zhang, 2016-08-03, Wednesday.
 # X, input, n by p
-# The function is the R version of the subroutine SubCalCovCorr2 in DyFA.
-# nlagout is set to be 0, since we are only interested in P factor analysis here.
-
-
 # Internal functions: find.r is to find lagged correlations of log 0 and negative lages.
 # Note that R does not allow 0 or negative indices in its arrays.
 

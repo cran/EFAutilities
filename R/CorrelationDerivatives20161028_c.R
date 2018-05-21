@@ -1,16 +1,15 @@
-###  2016-06-02, Thursday, Guangjian Zhang
 ### Two external functions: EliU, D.g.2.r
 
 
 EliU <- function(MP, eta = 1) {
 
-### Coded by Guangjian Zhang, 2016-05-20
 
 ## Browne, M. W. & Shapiro, A. (1986). The asymptotic Covariance matrix of 
 ## sample correlation coefficients under general conditions. Linear Algebra
 ## and its applications, 82, 169-176.
 ## Equations (4.1) and (4.3)
 
+  
 
 ## EliU -> The asymptotic covariance matrix of sample correlations if manifest variables are
 ## of an elliptical distribution.
@@ -67,7 +66,7 @@ Cov.r = Gamma - A %*% t(B) - B %*% t(A) + A %*% G %*% t(A)
  
 D.g.2.r <- function(Lambda, Phi, extraction=NULL) {
 
-### source('E:/Example/TEmp20120319b.txt') ### DifS2LPhiPsi
+### use DifS2LPhiPsi
 
 
 #-----------------------------------------------------------------------------------

@@ -1,4 +1,3 @@
-### 2016-06-02, Thursday, Guangjian Zhang
 ### The file contains five functions.
 ### EFA.Hessian is the head function
 
@@ -223,7 +222,6 @@ for (l in 2:m) {
 }
 
 ## Step 3, All other second order derivatives are zero. 
-# I need to do nothing
 
 
 ## Output

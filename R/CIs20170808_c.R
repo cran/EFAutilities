@@ -1,6 +1,3 @@
-# Minami Hattori
-# August 8, 2017
-
 # This function constructs confidence intervals using point and SE estimates. 
 # It accepts factor loadings, factor correlations, communalities, and unique variances
 
