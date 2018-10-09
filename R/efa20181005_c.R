@@ -58,12 +58,14 @@
 
 #'@method print efa
 
-#'@export
+#'@export 
+
 
 
 
 efa <- function(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL, dist='normal', fm='ols', rtype='oblique', rotation='CF-varimax', normalize=FALSE, maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
                           PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, se='information', LConfid=c(0.95,0.90), CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0) {
+
 
 
 ##--------------------------------------------------------------------------------------------------------
@@ -137,7 +139,7 @@ if (rtype=='oblique') {
 
   } else if (rotation=='target') {
 
-  fnames = 'pstQT'
+  fnames = 'pstT'
   Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, normalize=normalize, eps=1e-6, maxit=maxit)   
 
   } else {
@@ -151,6 +153,7 @@ if (rtype=='oblique') {
 list(fnames = fnames, Rot.Args = Rot.Args)
 
 } # Make.Rot.Args
+
 
 #-------------------------------------------------------------------------------------------------------
 
@@ -228,8 +231,6 @@ Boot = BootJack(x,rotated,Boot.Arg) # Remove a bug 2016-08-27, GZ
 
 #-------------------------------------------------------------------------------------------------------
 
-# check input arguments
-# external functions: get.RGamma, fa.extract
 
 
 confid = LConfid[1]
@@ -325,7 +326,9 @@ FE.Arg <- list(factors=factors, extraction = fm)
 
 ######
 
+### 2017-08-08, adding test statistics
 
+# if (A.lst$heywood==0) {
 
 if (fm=='ml') {
   statistic = (n-1) * A.lst$f
@@ -373,8 +376,6 @@ if (dist=='continuous') {
   }
   
 
-# factor rotation
-
 if (factors > 1) {
 
 transformation = NULL
@@ -418,6 +419,18 @@ Lambda.lst$loadings = M.out.temp[1:p,1:factors]
 if (rtype=='oblique') Lambda.lst$Phi = M.out.temp[(p+1):(p+factors),1:factors]
 
 } # (useorder)
+
+
+
+for (j in 1:factors) {
+  if (sum(Lambda.lst$loadings[1:p,j])<0) {
+    Lambda.lst$loadings[1:p,j] = Lambda.lst$loadings[1:p,j] * (-1)
+    Lambda.lst$Phi[1:factors,j] = Lambda.lst$Phi[1:factors,j] * (-1)
+    Lambda.lst$Phi[j,1:factors] = Lambda.lst$Phi[j,1:factors] * (-1)
+  } # if
+  
+} # (j in 1:factors)
+
 
 } # if (factors > 1)
 
@@ -495,7 +508,6 @@ if (factors==1) {
   Phise = matrix(0, factors, factors)
 }
 
-#### 2017-08-08, compute confidence intervals
 
 alpha = 1 - LConfid[1]
 CI.lambda = CIs(rotated, rotatedse, alpha, type = 'lambda')
@@ -542,19 +554,6 @@ class(efaout) <- "efa"
 
 return(efaout)
 
-# confidence intervals
-
-
-# output
-
-# unroated
-# f
-# rotated
-# phi
-# rotated.se
-# phi.se
-# rotated.confid
-# phi.confid
 
 } # efa
 

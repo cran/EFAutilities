@@ -16,6 +16,7 @@ Compute.stat <- function(R0,u.r,Unrotated) {
   
   
   # Step 0, housekeeping
+  #library(MASS)
   p = nrow(Unrotated)
   m = ncol(Unrotated)
   p.star = p * (p-1)/2
@@ -64,14 +65,15 @@ Compute.stat <- function(R0,u.r,Unrotated) {
   #This was taken from MASS package, Null function to avoid inference with another function
   null <-function(M)
   {
-    tmp <- qr(M)
-    set <- if (tmp$rank == 0L) 
+      tmp <- qr(M)
+      set <- if (tmp$rank == 0L)
       seq_len(ncol(M))
-    else -seq_len(tmp$rank)
-    qr.Q(tmp, complete = TRUE)[, set, drop = FALSE]
+      else -seq_len(tmp$rank)
+      qr.Q(tmp, complete = TRUE)[, set, drop = FALSE]
   }
   
   Delta.c = null (Delta)
+
   
   
   # Step 3, Compute the test statistics

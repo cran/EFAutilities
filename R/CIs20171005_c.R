@@ -16,7 +16,7 @@
 
 CIs <- function(point, se, alpha, type = type){
   
-  crit <- qnorm(1-alpha)
+  crit <- qnorm(1- alpha/2 ) 
   
   if(any(se<0)) stop ('Wait, there is a negative standard error!')
   if(sum(dim(point)==dim(se))!=2) stop (paste('Oops,',type,"matrix and its SEs are of different size!"))

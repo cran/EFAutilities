@@ -1,3 +1,65 @@
+#'@importFrom graphics title
+
+#'@importFrom stats pchisq
+
+#'@importFrom stats rnorm
+
+#'@importFrom stats uniroot
+
+#'@importFrom mvtnorm pmvnorm
+
+#'@importFrom mvtnorm dmvnorm
+
+#'@importFrom GPArotation cfQ
+
+#'@importFrom GPArotation geominQ
+
+#'@importFrom GPArotation pstQ
+
+#'@importFrom GPArotation cfT
+
+#'@importFrom GPArotation geominT
+
+#'@importFrom GPArotation pstT
+
+#'@importFrom stats acf
+
+#'@importFrom stats cor
+
+#'@importFrom stats dnorm
+
+#'@importFrom stats factanal
+
+#'@importFrom stats optim
+
+#'@importFrom stats pnorm
+
+#'@importFrom stats qnorm
+
+#'@importFrom stats quantile
+
+#'@importFrom stats sd
+
+#'@importFrom stats var
+
+#'@importFrom utils combn
+
+#'@importFrom utils head
+
+#'@importFrom plyr count
+
+#'@importFrom graphics barplot
+
+#'@export efa
+
+#'@export efaMR
+
+#'@export Align.Matrix
+
+#'@method print efa
+
+#'@export
+
 # efaMR: Exploratory factor analysis with multiple rotations
 # new functions: CompareSolutions and MultRandRotation
 
