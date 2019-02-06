@@ -1,27 +1,23 @@
 ### It contains two functions compute.stat and Model.Fit
+### The file was made on 2017-08-08
+
+################################################################
 
 ### The function Compute.stat implments Proposition 4 in Browne 1984.
 
 Compute.stat <- function(R0,u.r,Unrotated) {
   
-  # Input variables: 
-  # R0 -> the sample correlation matrix
-  # u.r -> the asymptotic covariance matrix of sample correlations
-  # Unrotated -> the unrotated factor loading matrix
-  
-  
-  # Output variables: the test statistic and the degrees of freedom
-  # statistic 
-  # df
-  
-  
   # Step 0, housekeeping
-  #library(MASS)
   p = nrow(Unrotated)
   m = ncol(Unrotated)
   p.star = p * (p-1)/2
   p2 = p * p
   
+  # Step 0.1, compute df
+  df = ((p-m)**2 - p - m ) /2
+  
+if (df > 0) {
+    
   # Step 1, make a selection matrix
   M.Select = matrix(0,p2,p.star)
   ij=0
@@ -73,8 +69,8 @@ Compute.stat <- function(R0,u.r,Unrotated) {
   }
   
   Delta.c = null (Delta)
-
   
+
   
   # Step 3, Compute the test statistics
   ### Step 3.1, select non-duplicated elements from the asymptotic covariance matrix
@@ -98,10 +94,10 @@ Compute.stat <- function(R0,u.r,Unrotated) {
   statistic = sum(temp.Delta.c.e * temp.right)
   }
   
+} else {
+  statistic = 0
+}  
   
-  
-  ### Step 3,4, compute the degrees of freedom
-  df = ((p-m)**2 - p - m ) /2
   
   list (statistic = statistic, df = df)
   

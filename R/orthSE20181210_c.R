@@ -1,7 +1,10 @@
 
 
+
 orth.se.augmt <- function(Lambda, Rsample, N, extraction, rotation, normalize, modelerror, 
 geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL) {
+
+
 
 
 
@@ -29,6 +32,8 @@ if (is.null(u.r)) u.r = EliU(Rsample)
 
 
 
+
+
 if (extraction == 'ml') {
 
 dg2r = D.g.2.r (Lambda, Phi, extraction='ml')
@@ -47,7 +52,7 @@ stop ('Factor extraction method is incorrectly specified.')
 }
 
 
-#### To remove part of factor correlations
+
 
 dg2r.orth = matrix(0,p*p, Nq)
 dg2r.orth[,1:(p*m)] = dg2r[,1:(p*m)]
@@ -64,6 +69,18 @@ Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical (Lambda, 'CF-varimax
 } else if (rotation=='CF-quartimax') {
 
 Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical (Lambda, 'CF-quartimax',normalize)
+
+} else if (rotation=='CF-facparsim') {
+  
+  Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical (Lambda, 'CF-facparsim',normalize)
+  
+} else if (rotation=='CF-equamax') {
+  
+  Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical (Lambda, 'CF-equamax',normalize)
+  
+} else if (rotation=='CF-parsimax') {
+  
+  Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical (Lambda, 'CF-parsimax',normalize)
 
 } else if (rotation=='geomin') {
 
@@ -84,7 +101,6 @@ Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical(Lambda,extraction)
   stop ("wrong specification for the factor rotation criterion")
 }
 
-### 
 
 Temp.Bigger = matrix(0,(Nq+Nc),(Nq+Nc))
 Temp.Bigger[1:(p*m),1:(p*m)] = Hessian [1:(p*m),1:(p*m)]
@@ -127,10 +143,8 @@ for (j in 1:p) {
 } # j
 
    Com.se = sqrt(Com.se/(N-1))
-#####
 
-##
 list(Lambda.se = Lambda.se,  Psi.se = Psi.se, Com.se = Com.se)
 
-} # orth.se.augmt
+} 
 

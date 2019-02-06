@@ -7,8 +7,8 @@
 ## Aug. 23th: Fisher scoring method is used to compute polychoric correation (faster)
 ## Aug. 18th: Update the functions check.data because of the naming error (X, Y, etc.)
 ## ==============================================================================
-
 library("mvtnorm")
+
 get.RGamma = function(dat, gamma=FALSE)
 {
   

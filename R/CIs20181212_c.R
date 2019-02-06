@@ -1,11 +1,14 @@
+# Minami Hattori
+# August 8, 2017
+
 # This function constructs confidence intervals using point and SE estimates. 
 # It accepts factor loadings, factor correlations, communalities, and unique variances
 
-# type: 'lambda', 'Phi', 'h'(communalities), 'uv'(unique variances)
+# type: 'lambda.oblq', 'lambda.orth', 'Phi', 'h'(communalities), 'uv'(unique variances)
 
 ######### lines to include in efa.R
 # alpha <- 1 - LConfid[1]
-# type <- 'lambda'
+# type <- 'lambda.oblq'
 # point <- rotated
 # se <- rotatedse
 
@@ -16,19 +19,33 @@
 
 CIs <- function(point, se, alpha, type = type){
   
-  crit <- qnorm(1- alpha/2 ) 
+  crit <- qnorm(1- alpha/2 )
   
   if(any(se<0)) stop ('Wait, there is a negative standard error!')
-  if(sum(dim(point)==dim(se))!=2) stop (paste('Oops,',type,"matrix and its SEs are of different size!"))
+  if(sum(dim(point)-dim(se))!=0) stop (paste('Oops,',type,"matrix and its SEs are of different size!"))
   
   
-  if(type=='lambda'){
+  if(type=='lambda.oblq'){
     
-    what <- 'Factor Loadings'
+    what <- 'Factor Loadings: oblique rotation'
     
     ll <- point - crit * se
     ul <- point + crit * se
+
+  } else if(type=='lambda.orth'){
+
+    what <- 'Factor Loadings: orthogonal rotation'
     
+    z.p <- log((1 + point)/(1-point))/2
+    z.se <- se/(1 - point^2)
+    
+    z.cl.low <- z.p - crit * z.se
+    z.cl.high <- z.p + crit * z.se
+    
+    ll <- (exp(2*z.cl.low)-1)/(exp(2*z.cl.low)+1)
+    ul <- (exp(2*z.cl.high)-1)/(exp(2*z.cl.high)+1)
+    
+        
   } else if(type=='Phi'){
     
     what <- 'Factor Correlations'

@@ -23,7 +23,7 @@ The format is a n by p matrix of ordinal variables, where n is the number of par
 
 The variables were ordered such that indicators of the same factor are grouped together. Note that  reverse-coded items are denoted by '_R'.
 
-V01 to V08 are variables for the factor extraversion: talkative, researved_R, fullenergy, enthusiastic, quiet_R, assertive, shy_R, and outgoing. 
+V01 to V08 are variables for the factor extraversion: talkative, reserved_R, fullenergy, enthusiastic, quiet_R, assertive, shy_R, and outgoing. 
 
 V09 to V17 are variables for the factor agreeableness: findfault_R, helpful, quarrels_R, forgiving, trusting, cold_R, considerate, rude_R, and cooperative. 
 

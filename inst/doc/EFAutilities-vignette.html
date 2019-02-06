@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Guangjian Zhang, Ge Jiang, Minami Hattori, and Lauren Trichtinger" />
+
+<meta name="date" content="2019-02-02" />
+
+<title>EFAutilities</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+a.sourceLine { display: inline-block; line-height: 1.25; }
+a.sourceLine { pointer-events: none; color: inherit; text-decoration: inherit; }
+a.sourceLine:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode { white-space: pre; position: relative; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+code.sourceCode { white-space: pre-wrap; }
+a.sourceLine { text-indent: -1em; padding-left: 1em; }
+}
+pre.numberSource a.sourceLine
+  { position: relative; left: -4em; }
+pre.numberSource a.sourceLine::before
+  { content: attr(title);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; pointer-events: all; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+    color: #aaaaaa;
+  }
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa;  padding-left: 4px; }
+div.sourceCode
+  {  }
+@media screen {
+a.sourceLine::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code span.at { color: #7d9029; } /* Attribute */
+code span.bn { color: #40a070; } /* BaseN */
+code span.bu { } /* BuiltIn */
+code span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code span.ch { color: #4070a0; } /* Char */
+code span.cn { color: #880000; } /* Constant */
+code span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code span.dt { color: #902000; } /* DataType */
+code span.dv { color: #40a070; } /* DecVal */
+code span.er { color: #ff0000; font-weight: bold; } /* Error */
+code span.ex { } /* Extension */
+code span.fl { color: #40a070; } /* Float */
+code span.fu { color: #06287e; } /* Function */
+code span.im { } /* Import */
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+code span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code span.op { color: #666666; } /* Operator */
+code span.ot { color: #007020; } /* Other */
+code span.pp { color: #bc7a00; } /* Preprocessor */
+code span.sc { color: #4070a0; } /* SpecialChar */
+code span.ss { color: #bb6688; } /* SpecialString */
+code span.st { color: #4070a0; } /* String */
+code span.va { color: #19177c; } /* Variable */
+code span.vs { color: #4070a0; } /* VerbatimString */
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+</style>
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#header {
+text-align: center;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; }  code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">EFAutilities</h1>
+<h4 class="author"><em>Guangjian Zhang, Ge Jiang, Minami Hattori, and Lauren Trichtinger <a href="#fn1" class="footnote-ref" id="fnref1"><sup>1</sup></a></em></h4>
+<h4 class="date"><em>2019-02-02</em></h4>
+
+
+
+<div id="summary" class="section level1">
+<h1>Summary</h1>
+<p>Exploratory factor analysis (EFA) (Gorsuch, 1983) is a popular statistical method in many disciplines (e.g., the social and behavioral sciences, education, and medical sciences). Researchers use EFA to study latent constructs (e.g., intelligence, personality traits, and emotion) whose measurements (e.g., questionnaires and fMRI time series) are always imperfect. The latent factors provide a parsimonious explanation of the relations among observed variables. EFA involves determining the number factors, estimating the unrotated factor loading matrix, conducting factor rotation, and interpreting EFA results. The EFAutilities package utilizes four utility functions for EFA and related methods. In particular, it computes standard errors for rotated factor loadings and factor correlations with a number of factor rotation criteria (Browne, 2001) and four data types (Zhang, 2014).</p>
+<p>The R package EFAutilities includes four functions (efa, ssem, efaMR, and Align.matrix) and two data sets (CPAI537 and BFI228). In the rest of the vignette, we first describes the functions and the data sets, then illustrate the functions with several examples.</p>
+</div>
+<div id="functions" class="section level1">
+<h1>Functions</h1>
+<p><strong>efa()</strong><br />
+The function <code>efa()</code> is the main function in the package. It conducts EFA either raw data or a correlation matrix. Four types of raw data are allowed: normal,non-normal continuous variables, Likert variables, and time series data. The function allows researcher to extract factors using either ordinary least squares (OLS) or maximum likelihood (ML) and to rotate factors obliquely or orthog- onally. Researchers can specify seven rotation criteria (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, and target) for orthogonal rotation and eight rotation criteria for (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, target, and xtarget) oblique rotation. These rotation criteria (except xtarget) are a subset of rotation criteria considered in CEFA3.0 (Browne, Cudeck, Tateneni, &amp; Mels, 2010). The rotation criterion xtarget is a new development (Zhang, Hattori, Trichtinger, &amp; Wang, 2018) that allows researchers to specify targets on both factor loadings and factor correlations. Researchers can compute standard errors using four methods (information, sandwich, bootstrap, and jackknife estimated).</p>
+<p><strong>ssem()</strong><br />
+The function <code>ssem()</code> conducts saturated structural equation modeling (SSEM), which is a re-parameterization of the rotated factor correlation matrix. All factors are exogenous in EFA, but factors can be either exogenous or endogenous in SSEM. The function allows researchers (1) to explore directional relations among common factors with flexible factor loading matrices and (2) to reexamine a SEM model that fit data poorly or encountered estimation problems like Heywood cases or non-convergence. The functions ssem() and efa() share most argements, but ssem() introduces a new rotation criterion ssemt that allows researchers to specify targets on structural parameters in SSEM.</p>
+<p><strong>efaMR()</strong><br />
+The function <code>efaMR()</code> compares EFA results from multiple random starts or from multiple rotation criteria. Researchers can use it to assess the computational stability of a rotation method. Hattori, Zhang, and Preacher (2017) investigate the phenomenon of local solutions for geomin rotation in a variety of situation. The functions <code>efaMR()</code> and <code>efa()</code> share many arguments, but it includes additional ones like <code>input.A</code>, <code>additionalRC</code>, <code>nstart</code>, <code>compare</code>, and <code>geomin.delta</code>.</p>
+<p><strong>Align.matrix()</strong><br />
+The function <code>Align.Matrix()</code> aligns a rotated factor loading matrix against an order matrix. Re- searchers can use it resolve the alignment problem, which refers to the phenomenon that the sign and ordering of factors are arbitrary in a factor loading matrix. Failing to resolve the alignment problem has a detrimental effect when comparing multiple factor analysis results. The function Align.matrix minimizes the sum of squared deviation between the rotated factor loading matrix and the order matrix. Because the function considers every possible ordering of the rotated factor loading matrix, the computational cost can be high if there are too many factors.</p>
+</div>
+<div id="data-description" class="section level1">
+<h1>Data Description</h1>
+<p>This package includes two data sets. The first one includes 228 undergraduate students self ratings on the 44 items in the Big Five Inventory (John, Donahue, &amp; Kentle, 1991). It is part of a study on personality and relationship satisfaction (Luo, 2005). The ratings are five-point Likert items: disagree strongly (1), disagree a little (2), neither agree nor diagree (3), agree a little (4), and agree strongly (5). The data are presented as a n by p matrix of ordinal variables, where n is the number of participants (228) and p is the number of manifest variables (44).</p>
+<p>The second one includes 28 composite scores of the Chinese personality inventory (Cheung et al., 1996) CAPI537. This data is part of a study on martial satisfaction (Luo et al., 2008). Participants of the study were 537 urban Chinese couples within the first year of their first marriage. The data are composite scores of the 537 wives. The data are presented as a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28).</p>
+</div>
+<div id="illustration-examples" class="section level1">
+<h1>Illustration Examples</h1>
+<p>We illustrate EFAutilities with five examples. Example 1 illustrates ML estimation of EFA with normal data; Example 2 illustrates OLS estimation of EFA with ordinal data; Example 3 illustrates ML estimation of SSEM with a data correlation matrix; Example 4 illustrates EFA with multiple random starting points; Example 5 illustrates the realignment of a rotated factor loading matrix against an order matrix.</p>
+<div id="example-1" class="section level2">
+<h2>Example 1</h2>
+<p>In Example 1, we fit a 4-factor model to the <code>CPAI537</code> data. We obtained unrotated factor loadings using ml and we conduct oblique CF-varimax rotation. We compute standard errors for rotated factor loadings and factor correlations using a sandwich method.</p>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb1-1" title="1"><span class="kw">library</span>(EFAutilities)</a>
+<a class="sourceLine" id="cb1-2" title="2"><span class="kw">data</span>(<span class="st">&quot;CPAI537&quot;</span>)</a></code></pre></div>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb2-1" title="1">mnames=<span class="kw">c</span>(<span class="st">&quot;Nov&quot;</span>, <span class="st">&quot;Div&quot;</span>, <span class="st">&quot;Dit&quot;</span>,<span class="st">&quot;LEA&quot;</span>,<span class="st">&quot;L_A&quot;</span>, <span class="st">&quot;AES&quot;</span>, <span class="st">&quot;E_I&quot;</span>, <span class="st">&quot;ENT&quot;</span>, <span class="st">&quot;RES&quot;</span>, <span class="st">&quot;EMO&quot;</span>, <span class="st">&quot;I_S&quot;</span>,</a>
+<a class="sourceLine" id="cb2-2" title="2">         <span class="st">&quot;PRA&quot;</span>, <span class="st">&quot;O_P&quot;</span>, <span class="st">&quot;MET&quot;</span>, <span class="st">&quot;FAC&quot;</span>, <span class="st">&quot;I_E&quot;</span>, <span class="st">&quot;FAM&quot;</span>, <span class="st">&quot;DEF&quot;</span>, <span class="st">&quot;G_M&quot;</span>, <span class="st">&quot;INT&quot;</span>, <span class="st">&quot;S_S&quot;</span>, </a>
+<a class="sourceLine" id="cb2-3" title="3">         <span class="st">&quot;V_S&quot;</span>, <span class="st">&quot;T_M&quot;</span>, <span class="st">&quot;REN&quot;</span>, <span class="st">&quot;SOC&quot;</span>, <span class="st">&quot;DIS&quot;</span>, <span class="st">&quot;HAR&quot;</span>, <span class="st">&quot;T_E&quot;</span>)</a>
+<a class="sourceLine" id="cb2-4" title="4">fnames=<span class="kw">c</span>(<span class="st">&quot;Social Potency&quot;</span>, <span class="st">&quot;Dependability&quot;</span>,<span class="st">&quot;Accommodation&quot;</span>,<span class="st">&quot;Relatedness&quot;</span>)</a>
+<a class="sourceLine" id="cb2-5" title="5">res1 &lt;-<span class="st"> </span><span class="kw">efa</span>(<span class="dt">x=</span>CPAI537,<span class="dt">factors=</span><span class="dv">4</span>, <span class="dt">fm=</span><span class="st">&#39;ml&#39;</span>, <span class="dt">mnames=</span>mnames, <span class="dt">fnames=</span>fnames)</a>
+<a class="sourceLine" id="cb2-6" title="6">res1</a></code></pre></div>
+<pre><code>## 
+## Summary of Analysis: 
+##    Estimation Method:   ml 
+##    Rotation Type:   oblique 
+##    Rotation Criterion:   CF-varimax 
+##    Test Statistic:   545 
+##    Degrees of Freedom:   272 
+##    Effect numbers of Parameters:   134 
+##    P value for perfect fit:   0 
+## 
+## Rotated Factor Loadings: 
+##     Social Potency Dependability Accommodation Relatedness
+## Nov         -0.117         0.674         0.146      -0.021
+## Div         -0.191         0.530         0.386      -0.145
+## Dit          0.139         0.461         0.313       0.007
+## LEA          0.297         0.672        -0.084      -0.036
+## L_A          0.068         0.471         0.176       0.161
+## AES          0.128         0.345         0.215      -0.093
+## E_I          0.001         0.565        -0.067       0.104
+## ENT         -0.096         0.536        -0.272       0.425
+## RES          0.065         0.004         0.120       0.620
+## EMO         -0.049         0.030         0.062      -0.750
+## I_S          0.440        -0.218        -0.191      -0.461
+## PRA          0.025         0.035         0.263       0.505
+## O_P         -0.159         0.285        -0.009       0.476
+## MET          0.175         0.012         0.052       0.537
+## FAC          0.311         0.058         0.238      -0.278
+## I_E         -0.373         0.021        -0.074       0.223
+## FAM         -0.281        -0.020         0.378       0.375
+## DEF          0.636         0.141        -0.174      -0.259
+## G_M         -0.617        -0.053         0.228       0.236
+## INT         -0.540         0.204         0.161       0.076
+## S_S          0.589         0.209        -0.019      -0.126
+## V_S         -0.477        -0.121         0.383       0.255
+## T_M          0.625        -0.157         0.076       0.263
+## REN          0.092         0.036         0.724      -0.073
+## SOC          0.139         0.294         0.602      -0.060
+## DIS          0.729         0.058         0.298       0.182
+## HAR         -0.173        -0.029         0.648       0.250
+## T_E          0.188        -0.136         0.357       0.075
+## 
+## Factor Correlations: 
+##                Social Potency Dependability Accommodation Relatedness
+## Social Potency          1.000         0.058        -0.144      -0.313
+## Dependability           0.058         1.000         0.207       0.101
+## Accommodation          -0.144         0.207         1.000       0.301
+## Relatedness            -0.313         0.101         0.301       1.000</code></pre>
+<p>The basic output gives you a summary of the analysis, a rotated factor loading matrix and a factor correlation matrix. We can access further results by the <code>$</code> command. For example, we can obtain the confidence intervals for the factor loadings and factor correlations with the following commands:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb4-1" title="1">res1<span class="op">$</span>rotatedlow      <span class="co"># lower bound for 95 percent confidence intervals for factor loadings</span></a></code></pre></div>
+<pre><code>##     Social Potency Dependability Accommodation Relatedness
+## Nov       -0.18708        0.6034        0.0465     -0.1054
+## Div       -0.26728        0.4266        0.2754     -0.2256
+## Dit        0.05227        0.3600        0.1990     -0.0845
+## LEA        0.20630        0.6070       -0.1884     -0.1174
+## L_A       -0.01647        0.3856        0.0711      0.0674
+## AES        0.02911        0.2375        0.0967     -0.2003
+## E_I       -0.08007        0.4825       -0.1650     -0.0119
+## ENT       -0.17222        0.4238       -0.3568      0.3014
+## RES       -0.01855       -0.0713        0.0273      0.5338
+## EMO       -0.12003       -0.0483       -0.0131     -0.8118
+## I_S        0.34982       -0.2874       -0.2736     -0.5438
+## PRA       -0.07543       -0.0438        0.1724      0.4195
+## O_P       -0.24481        0.1915       -0.0937      0.3761
+## MET        0.08707       -0.0733       -0.0444      0.4430
+## FAC        0.21590       -0.0491        0.1273     -0.3889
+## I_E       -0.46246       -0.0725       -0.1778      0.1182
+## FAM       -0.39535       -0.0949        0.2805      0.2881
+## DEF        0.54061        0.0718       -0.2801     -0.3427
+## G_M       -0.71718       -0.1250        0.1239      0.1489
+## INT       -0.61760        0.1214        0.0681     -0.0137
+## S_S        0.49295        0.1128       -0.1398     -0.2332
+## V_S       -0.59390       -0.1960        0.2751      0.1701
+## T_M        0.53710       -0.2377       -0.0193      0.1657
+## REN        0.00881       -0.0571        0.6576     -0.1553
+## SOC        0.06052        0.1922        0.5137     -0.1383
+## DIS        0.65631       -0.0112        0.2076      0.0973
+## HAR       -0.27782       -0.1042        0.5683      0.1694
+## T_E        0.08012       -0.2449        0.2520     -0.0515</code></pre>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb6-1" title="1">res1<span class="op">$</span>rotatedupper    <span class="co"># upper bound for 95 percent confidence intervals for factor loadings</span></a></code></pre></div>
+<pre><code>##     Social Potency Dependability Accommodation Relatedness
+## Nov        -0.0460        0.7440        0.2457     0.06368
+## Div        -0.1138        0.6342        0.4960    -0.06458
+## Dit         0.2260        0.5612        0.4270     0.09810
+## LEA         0.3882        0.7376        0.0213     0.04467
+## L_A         0.1535        0.5572        0.2812     0.25495
+## AES         0.2267        0.4518        0.3340     0.01347
+## E_I         0.0813        0.6477        0.0307     0.21937
+## ENT        -0.0203        0.6488       -0.1868     0.54928
+## RES         0.1484        0.0787        0.2124     0.70593
+## EMO         0.0228        0.1092        0.1374    -0.68845
+## I_S         0.5299       -0.1480       -0.1089    -0.37904
+## PRA         0.1260        0.1129        0.3546     0.59142
+## O_P        -0.0726        0.3778        0.0760     0.57540
+## MET         0.2638        0.0970        0.1490     0.63026
+## FAC         0.4064        0.1647        0.3480    -0.16665
+## I_E        -0.2827        0.1147        0.0305     0.32797
+## FAM        -0.1665        0.0545        0.4758     0.46281
+## DEF         0.7319        0.2109       -0.0678    -0.17450
+## G_M        -0.5171        0.0193        0.3320     0.32378
+## INT        -0.4627        0.2856        0.2535     0.16657
+## S_S         0.6847        0.3061        0.1015    -0.01923
+## V_S        -0.3601       -0.0463        0.4913     0.33935
+## T_M         0.7122       -0.0767        0.1705     0.35959
+## REN         0.1757        0.1292        0.7897     0.00834
+## SOC         0.2174        0.3964        0.6908     0.01802
+## DIS         0.8025        0.1278        0.3874     0.26769
+## HAR        -0.0683        0.0469        0.7268     0.32980
+## T_E         0.2956       -0.0271        0.4612     0.20054</code></pre>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb8-1" title="1">res1<span class="op">$</span>Philow         <span class="co"># lower bound for 95 percent confidence intervals for factor correlations</span></a></code></pre></div>
+<pre><code>##                Social Potency Dependability Accommodation Relatedness
+## Social Potency         1.0000       -0.0169        -0.208     -0.3677
+## Dependability         -0.0169        1.0000         0.139      0.0275
+## Accommodation         -0.2085        0.1388         1.000      0.2326
+## Relatedness           -0.3677        0.0275         0.233      1.0000</code></pre>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb10-1" title="1">res1<span class="op">$</span>Phiupper       <span class="co"># upper bound for 95 percent confidence intervals for factor correlations</span></a></code></pre></div>
+<pre><code>##                Social Potency Dependability Accommodation Relatedness
+## Social Potency         1.0000         0.133       -0.0782      -0.256
+## Dependability          0.1325         1.000        0.2724       0.174
+## Accommodation         -0.0782         0.272        1.0000       0.367
+## Relatedness           -0.2564         0.174        0.3673       1.000</code></pre>
+<p>We can also look at the test statistic and measures of model fit.</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb12-1" title="1">res1<span class="op">$</span>ModelF</a></code></pre></div>
+<pre><code>## $f.stat
+## objective 
+##       545 
+## 
+## $df
+## [1] 272
+## 
+## $n
+## [1] 537
+## 
+## $RMSEA
+## objective 
+##    0.0432 
+## 
+## $p.perfect
+## objective 
+##         0 
+## 
+## $p.close
+## objective 
+##     0.984 
+## 
+## $confid.level
+## [1] 0.9
+## 
+## $RMSEA.l
+## [1] 0.0379
+## 
+## $RMSEA.u
+## [1] 0.0485
+## 
+## $ECVI
+## objective 
+##      1.51 
+## 
+## $ECVI.l
+## [1] 1.42
+## 
+## $ECVI.u
+## [1] 1.68</code></pre>
+</div>
+<div id="example-2" class="section level2">
+<h2>Example 2</h2>
+<p>In Example 2, we fit a 2-factor model to the data <code>BFI228</code>. The data contains 5-point Likert variables. We first estimate polychoric correlations from the Likert variable. We then obtain the unrotated factor loading matrix from the polychoric correlation matrix using ols. We conduct oblique geomin rotation. We compute standard errors using a sandwich method. The efa model involve only 17 variables out of 44 variables for the illustration purpose.</p>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb14-1" title="1"><span class="kw">data</span>(<span class="st">&quot;BFI228&quot;</span>)</a>
+<a class="sourceLine" id="cb14-2" title="2">reduced2 &lt;-<span class="st"> </span>BFI228[,<span class="dv">1</span><span class="op">:</span><span class="dv">17</span>]</a></code></pre></div>
+<p>Since the data use Likert variables, we set the argument <code>dist</code> to be <code>ordinal</code>. We can also include an argument for model error. By default, an efa model is a parisonmious representation to the complex real world. Thus, we expect some amount of model error. However, users can specify <code>merror=&#39;NO&#39;</code>, if they believe their efa model fits perfectly in the population.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb15-1" title="1">mnames=<span class="kw">c</span>(<span class="st">&quot;talkative&quot;</span>, <span class="st">&quot;reserved_R&quot;</span>, <span class="st">&quot;fullenergy&quot;</span>, <span class="st">&quot;enthusiastic&quot;</span>, <span class="st">&quot;quiet_R&quot;</span>,<span class="st">&quot;assertive&quot;</span>, </a>
+<a class="sourceLine" id="cb15-2" title="2">         <span class="st">&quot;shy_R&quot;</span>, <span class="st">&quot;outgoing&quot;</span>, <span class="st">&quot;findfault_R&quot;</span>, <span class="st">&quot;helpful&quot;</span>, <span class="st">&quot;quarrels_R&quot;</span>, <span class="st">&quot;forgiving&quot;</span>, </a>
+<a class="sourceLine" id="cb15-3" title="3">         <span class="st">&quot;trusting&quot;</span>, <span class="st">&quot;cold_R&quot;</span>, <span class="st">&quot;considerate&quot;</span>, <span class="st">&quot;rude_R&quot;</span>, <span class="st">&quot;cooperative&quot;</span>)</a>
+<a class="sourceLine" id="cb15-4" title="4">fnames=<span class="kw">c</span>(<span class="st">&quot;extraversion&quot;</span>,<span class="st">&quot;agreeableness&quot;</span>)</a>
+<a class="sourceLine" id="cb15-5" title="5">res2 &lt;-<span class="kw">efa</span>(<span class="dt">x=</span>reduced2, <span class="dt">factors=</span><span class="dv">2</span>, <span class="dt">dist=</span><span class="st">&quot;ordinal&quot;</span>, <span class="dt">rotation=</span><span class="st">&quot;geomin&quot;</span>, <span class="dt">merror=</span><span class="st">&quot;YES&quot;</span>,</a>
+<a class="sourceLine" id="cb15-6" title="6">           <span class="dt">mnames=</span>mnames, <span class="dt">fnames=</span>fnames)</a>
+<a class="sourceLine" id="cb15-7" title="7">res2</a></code></pre></div>
+<pre><code>## 
+## Summary of Analysis: 
+##    Estimation Method:   ols 
+##    Rotation Type:   oblique 
+##    Rotation Criterion:   geomin 
+##    Test Statistic:   298 
+##    Degrees of Freedom:   103 
+##    Effect numbers of Parameters:   50 
+##    P value for perfect fit:   0 
+## 
+## Rotated Factor Loadings: 
+##              extraversion agreeableness
+## talkative           0.772        -0.036
+## reserved_R         -0.589        -0.021
+## fullenergy          0.588         0.378
+## enthusiastic        0.662         0.361
+## quiet_R            -0.854         0.078
+## assertive           0.635        -0.025
+## shy_R              -0.704         0.096
+## outgoing            0.792         0.165
+## findfault_R        -0.057        -0.520
+## helpful            -0.031         0.591
+## quarrels_R          0.123        -0.726
+## forgiving           0.040         0.611
+## trusting            0.108         0.629
+## cold_R             -0.102        -0.744
+## considerate        -0.131         0.759
+## rude_R              0.078        -0.713
+## cooperative         0.181         0.634
+## 
+## Factor Correlations: 
+##               extraversion agreeableness
+## extraversion         1.000         0.209
+## agreeableness        0.209         1.000</code></pre>
+</div>
+<div id="example-3" class="section level2">
+<h2>Example 3</h2>
+<p>In Example 3, we fit an SSEM to a correlation matrix (Reisenzein, 1986). The original study was on an attribution theory of helping behaviors. The sample size was 138. The SSEM involves 9 manifest variables and 3 latent factors. We expect that an uncontrollable need results in sympathy toward the help-seeker and sympathy further leads to helping behavior. Therefore, we denote the two factors “helping behavior” and “sympathy” as endogenous and the factor “controllability” as exogenous.</p>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb17-1" title="1">cormat &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">1</span>, <span class="fl">.865</span>, <span class="fl">.733</span>, <span class="fl">.511</span>, <span class="fl">.412</span>, <span class="fl">.647</span>, <span class="fl">-.462</span>, <span class="fl">-.533</span>, <span class="fl">-.544</span>,</a>
+<a class="sourceLine" id="cb17-2" title="2">                  <span class="fl">.865</span>, <span class="dv">1</span>, <span class="fl">.741</span>, <span class="fl">.485</span>, <span class="fl">.366</span>, <span class="fl">.595</span>, <span class="fl">-.406</span>, <span class="fl">-.474</span>, <span class="fl">-.505</span>,</a>
+<a class="sourceLine" id="cb17-3" title="3">                  <span class="fl">.733</span>, <span class="fl">.741</span>, <span class="dv">1</span>, <span class="fl">.316</span>, <span class="fl">.268</span>, <span class="fl">.497</span>, <span class="fl">-.303</span>, <span class="fl">-.372</span>, <span class="fl">-.44</span>,</a>
+<a class="sourceLine" id="cb17-4" title="4">                  <span class="fl">.511</span>, <span class="fl">.485</span>, <span class="fl">.316</span>, <span class="dv">1</span>, <span class="fl">.721</span>, <span class="fl">.731</span>, <span class="fl">-.521</span>, <span class="fl">-.531</span>, <span class="fl">-.621</span>,</a>
+<a class="sourceLine" id="cb17-5" title="5">                  <span class="fl">.412</span>, <span class="fl">.366</span>, <span class="fl">.268</span>, <span class="fl">.721</span>, <span class="dv">1</span>, <span class="fl">.599</span>, <span class="fl">-.455</span>, <span class="fl">-.425</span>, <span class="fl">-.455</span>,</a>
+<a class="sourceLine" id="cb17-6" title="6">                  <span class="fl">.647</span>, <span class="fl">.595</span>, <span class="fl">.497</span>, <span class="fl">.731</span>, <span class="fl">.599</span>, <span class="dv">1</span>, <span class="fl">-.417</span>, <span class="fl">-.47</span>, <span class="fl">-.521</span>,</a>
+<a class="sourceLine" id="cb17-7" title="7">                 <span class="fl">-.462</span>, <span class="fl">-.406</span>, <span class="fl">-.303</span>, <span class="fl">-.521</span>, <span class="fl">-.455</span>, <span class="fl">-.417</span>, <span class="dv">1</span>, <span class="fl">.747</span>, <span class="fl">.727</span>,</a>
+<a class="sourceLine" id="cb17-8" title="8">                 <span class="fl">-.533</span>, <span class="fl">-.474</span>, <span class="fl">-.372</span>, <span class="fl">-.531</span>, <span class="fl">-.425</span>, <span class="fl">-.47</span>, <span class="fl">.747</span>, <span class="dv">1</span>, <span class="fl">.772</span>,</a>
+<a class="sourceLine" id="cb17-9" title="9">                 <span class="fl">-.544</span>, <span class="fl">-.505</span>, <span class="fl">-.44</span>, <span class="fl">-.621</span>, <span class="fl">-.455</span>, <span class="fl">-.521</span>, <span class="fl">.727</span>, <span class="fl">.772</span>, <span class="dv">1</span>),</a>
+<a class="sourceLine" id="cb17-10" title="10">                 <span class="dt">ncol =</span> <span class="dv">9</span>)</a>
+<a class="sourceLine" id="cb17-11" title="11"></a>
+<a class="sourceLine" id="cb17-12" title="12">p &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb17-13" title="13">m &lt;-<span class="st"> </span><span class="dv">3</span></a>
+<a class="sourceLine" id="cb17-14" title="14">m1 &lt;-<span class="st"> </span><span class="dv">2</span></a>
+<a class="sourceLine" id="cb17-15" title="15">N &lt;-<span class="st"> </span><span class="dv">138</span></a>
+<a class="sourceLine" id="cb17-16" title="16">mvnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;H1_likelihood&quot;</span>, <span class="st">&quot;H2_certainty&quot;</span>, <span class="st">&quot;H3_amount&quot;</span>, <span class="st">&quot;S1_sympathy&quot;</span>,</a>
+<a class="sourceLine" id="cb17-17" title="17"><span class="st">&quot;S2_pity&quot;</span>, <span class="st">&quot;S3_concern&quot;</span>, <span class="st">&quot;C1_controllable&quot;</span>, <span class="st">&quot;C2_responsible&quot;</span>, <span class="st">&quot;C3_fault&quot;</span>)</a>
+<a class="sourceLine" id="cb17-18" title="18">fnames &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;H&quot;</span>, <span class="st">&quot;S&quot;</span>, <span class="st">&quot;C&quot;</span>)</a></code></pre></div>
+<p>Next, we want to prepare our target and weight matrices based on our theory. For the target matrix, a 9 indicates a value that is allowed to be freely estimated. We set the other values to be rotation as close to 0 as possible. The weight matrix has 1 in the places where the target matrix has zeros and otherwise zero.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb18-1" title="1"><span class="co"># a 9 x 3 matrix for lambda; p = 9, m = 3</span></a>
+<a class="sourceLine" id="cb18-2" title="2">MT &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, p, m, <span class="dt">dimnames =</span> <span class="kw">list</span>(mvnames, fnames))</a>
+<a class="sourceLine" id="cb18-3" title="3">MT[<span class="kw">c</span>(<span class="dv">1</span><span class="op">:</span><span class="dv">3</span>,<span class="dv">6</span>),<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-4" title="4">MT[<span class="dv">4</span><span class="op">:</span><span class="dv">6</span>,<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-5" title="5">MT[<span class="dv">7</span><span class="op">:</span><span class="dv">9</span>,<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-6" title="6">MW &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, p, m, <span class="dt">dimnames =</span> <span class="kw">list</span>(mvnames, fnames))</a>
+<a class="sourceLine" id="cb18-7" title="7">MW[MT <span class="op">==</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb18-8" title="8"><span class="co"># a 2 x 3 matrix for [B|G]; m1 = 2, m = 3</span></a>
+<a class="sourceLine" id="cb18-9" title="9">BGT &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, m1, m, <span class="dt">dimnames =</span> <span class="kw">list</span>(fnames[<span class="dv">1</span><span class="op">:</span>m1], fnames))</a>
+<a class="sourceLine" id="cb18-10" title="10">BGT[<span class="dv">1</span>,<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-11" title="11">BGT[<span class="dv">2</span>,<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-12" title="12">BGT[<span class="dv">1</span>,<span class="dv">3</span>] &lt;-<span class="st"> </span><span class="dv">9</span></a>
+<a class="sourceLine" id="cb18-13" title="13">BGW &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, m1, m, <span class="dt">dimnames =</span> <span class="kw">list</span>(fnames[<span class="dv">1</span><span class="op">:</span>m1], fnames))</a>
+<a class="sourceLine" id="cb18-14" title="14">BGW[BGT <span class="op">==</span><span class="st"> </span><span class="dv">0</span>] &lt;-<span class="st"> </span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb18-15" title="15">BGW[,<span class="dv">1</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb18-16" title="16">BGW[<span class="dv">2</span>,<span class="dv">2</span>] &lt;-<span class="st"> </span><span class="dv">0</span></a>
+<a class="sourceLine" id="cb18-17" title="17"><span class="co"># a 1 x 1 matrix for Phi.xi; m - m1 = 1 (only one exogenous factor)</span></a>
+<a class="sourceLine" id="cb18-18" title="18">PhiT &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">9</span>, m <span class="op">-</span><span class="st"> </span>m1, m <span class="op">-</span><span class="st"> </span>m1)</a>
+<a class="sourceLine" id="cb18-19" title="19">PhiW &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="dv">0</span>, m <span class="op">-</span><span class="st"> </span>m1, m <span class="op">-</span><span class="st"> </span>m1)</a></code></pre></div>
+<p>We can then run the ssem function by</p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb19-1" title="1"><span class="co">#SSEMres &lt;- ssem(covmat = cormat, factors = m, exfactors = m - m1,</span></a>
+<a class="sourceLine" id="cb19-2" title="2"><span class="co">#dist = &quot;normal&quot;, n.obs = N, fm = &quot;ml&quot;, rotation = &quot;semtarget&quot;,</span></a>
+<a class="sourceLine" id="cb19-3" title="3"><span class="co">#maxit = 10000, MTarget = MT, MWeight = MW, BGTarget = BGT, BGWeight = BGW,</span></a>
+<a class="sourceLine" id="cb19-4" title="4"><span class="co">#PhiTarget = PhiT, PhiWeight = PhiW,  useorder = TRUE, se = &quot;information&quot;,</span></a>
+<a class="sourceLine" id="cb19-5" title="5"><span class="co">#mnames = mvnames, fnames = fnames)</span></a>
+<a class="sourceLine" id="cb19-6" title="6"></a>
+<a class="sourceLine" id="cb19-7" title="7"><span class="co">#SSEMres</span></a></code></pre></div>
+</div>
+<div id="example-4" class="section level2">
+<h2>Example 4</h2>
+<p>In Example 4, we use the <code>efaMR</code> to compare EFA solutions from 100 random orthogonal starts. We fit a 5-factor model to the data ``CPAI537’ data fit then obtain the unrotated factor loading matrix from using ml. We conduct oblique geomin rotation.</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb20-1" title="1">efaMRres &lt;-<span class="kw">efaMR</span>(CPAI537, <span class="dt">factors =</span> <span class="dv">5</span>, <span class="dt">fm =</span><span class="st">&#39;ml&#39;</span>, <span class="dt">rtype =</span><span class="st">&#39;oblique&#39;</span>, <span class="dt">rotation =</span><span class="st">&#39;geomin&#39;</span>,</a>
+<a class="sourceLine" id="cb20-2" title="2">             <span class="dt">geomin.delta =</span> <span class="fl">.01</span>, <span class="dt">nstart =</span> <span class="dv">100</span>)</a></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb21-1" title="1"><span class="co">#res3$MultipleSolutions for more details</span></a>
+<a class="sourceLine" id="cb21-2" title="2">efaMRres<span class="op">$</span>MultipleSolutions<span class="op">$</span>FrequenciesSolutions</a></code></pre></div>
+<pre><code>## [1] 31 11 33  1 17  3  3  1</code></pre>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb23-1" title="1">efaMRres<span class="op">$</span>MultipleSolutions<span class="op">$</span>Solutions[[<span class="dv">1</span>]]</a></code></pre></div>
+<pre><code>## $Lambda
+##         [,1]   [,2]   [,3]   [,4]   [,5]
+##  [1,] -0.641 -0.125 -0.062 -0.229  0.010
+##  [2,] -0.492 -0.106 -0.275 -0.321  0.010
+##  [3,] -0.386 -0.275 -0.225 -0.035  0.002
+##  [4,] -0.661 -0.089  0.028  0.089 -0.285
+##  [5,] -0.412 -0.272 -0.066 -0.016  0.152
+##  [6,] -0.235 -0.331 -0.127 -0.074 -0.107
+##  [7,] -0.727  0.316 -0.016  0.025 -0.011
+##  [8,] -0.610  0.061  0.296  0.055  0.328
+##  [9,]  0.005 -0.195  0.004  0.274  0.661
+## [10,]  0.027  0.026 -0.125 -0.361 -0.730
+## [11,]  0.265 -0.032  0.026  0.163 -0.719
+## [12,] -0.035 -0.136 -0.149  0.198  0.596
+## [13,] -0.340  0.029  0.084  0.049  0.523
+## [14,] -0.013 -0.152  0.014  0.327  0.493
+## [15,] -0.044  0.020 -0.328  0.099 -0.371
+## [16,] -0.016 -0.052  0.202 -0.199  0.390
+## [17,] -0.077  0.209 -0.306 -0.010  0.632
+## [18,] -0.124 -0.024 -0.023  0.345 -0.648
+## [19,]  0.013  0.096 -0.059 -0.336  0.615
+## [20,] -0.187 -0.053  0.017 -0.422  0.372
+## [21,] -0.055 -0.477  0.008  0.269 -0.416
+## [22,]  0.113 -0.013 -0.194 -0.244  0.632
+## [23,]  0.083  0.129 -0.247  0.652  0.004
+## [24,] -0.019 -0.035 -0.676  0.004  0.106
+## [25,] -0.318  0.048 -0.608  0.025  0.018
+## [26,] -0.041 -0.149 -0.385  0.579 -0.071
+## [27,]  0.007 -0.002 -0.512 -0.039  0.548
+## [28,]  0.227 -0.289 -0.267  0.123  0.138
+## 
+## $Phi
+##        [,1]   [,2]   [,3]   [,4]   [,5]
+## [1,]  1.000  0.317  0.231 -0.128 -0.105
+## [2,]  0.317  1.000  0.263 -0.123  0.025
+## [3,]  0.231  0.263  1.000  0.090 -0.143
+## [4,] -0.128 -0.123  0.090  1.000 -0.295
+## [5,] -0.105  0.025 -0.143 -0.295  1.000</code></pre>
+<div class="sourceCode" id="cb25"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb25-1" title="1">efaMRres<span class="op">$</span>MultipleSolutions<span class="op">$</span>Solutions[[<span class="dv">2</span>]]</a></code></pre></div>
+<pre><code>## $Lambda
+##         [,1]   [,2]   [,3]   [,4]   [,5]
+##  [1,] -0.594 -0.243 -0.042 -0.129 -0.032
+##  [2,] -0.451 -0.234 -0.243 -0.274  0.055
+##  [3,] -0.337 -0.332 -0.075  0.053  0.196
+##  [4,] -0.626 -0.158  0.023  0.389 -0.050
+##  [5,] -0.363 -0.314  0.104  0.002  0.163
+##  [6,] -0.186 -0.382 -0.067  0.070  0.057
+##  [7,] -0.734  0.240 -0.005  0.094  0.015
+##  [8,] -0.592  0.033  0.399 -0.020 -0.006
+##  [9,]  0.022 -0.104  0.409 -0.064  0.475
+## [10,]  0.031 -0.086 -0.520  0.026 -0.449
+## [11,]  0.251 -0.007 -0.219  0.563 -0.256
+## [12,] -0.021 -0.074  0.239 -0.125  0.504
+## [13,] -0.329  0.032  0.308 -0.199  0.216
+## [14,] -0.002 -0.061  0.362  0.088  0.419
+## [15,] -0.048  0.004 -0.335  0.298  0.120
+## [16,] -0.004 -0.066  0.229 -0.411 -0.072
+## [17,] -0.096  0.221 -0.006 -0.436  0.467
+## [18,] -0.127 -0.003 -0.120  0.772 -0.068
+## [19,]  0.012  0.059  0.049 -0.745  0.111
+## [20,] -0.162 -0.139  0.024 -0.628 -0.069
+## [21,] -0.006 -0.450  0.052  0.625  0.030
+## [22,]  0.118 -0.024  0.011 -0.666  0.275
+## [23,]  0.049  0.262  0.046  0.632  0.524
+## [24,] -0.013 -0.054 -0.418 -0.110  0.529
+## [25,] -0.310 -0.002 -0.386  0.004  0.458
+## [26,] -0.037 -0.053 -0.036  0.655  0.590
+## [27,]  0.010  0.002 -0.156 -0.412  0.582
+## [28,]  0.248 -0.242 -0.044  0.039  0.347
+## 
+## $Phi
+##        [,1]   [,2]   [,3]   [,4]   [,5]
+## [1,]  1.000  0.288  0.041  0.124 -0.292
+## [2,]  0.288  1.000  0.226 -0.055 -0.253
+## [3,]  0.041  0.226  1.000 -0.232  0.020
+## [4,]  0.124 -0.055 -0.232  1.000 -0.343
+## [5,] -0.292 -0.253  0.020 -0.343  1.000</code></pre>
+<p>The output displays the multiple factoring loadings and factor correlations matrix for the unique solutions found. Also, the comparisons should the minimum congruence and raw congruences.</p>
+</div>
+<div id="example-5" class="section level2">
+<h2>Example 5</h2>
+<p>In Example 5, we illustrate how to align a factor loading matrix to an order matrix using the <code>Align.Matix</code> function. In additon, we align the factor correlation matrix accordingly. Let’s consider a 4-by-2 factor loading matrix. The order matrix, A, is also a 4-by-2 matrix. We form the 6-by-2 input matrix, B, by stacking the factor loading matrix and factor correlation matrix together. The first 4 rows contain the factor loading matrix and the last 2 rows contain the factor correlation matrix.</p>
+<div class="sourceCode" id="cb27"><pre class="sourceCode r"><code class="sourceCode r"><a class="sourceLine" id="cb27-1" title="1"><span class="co">#Order Matrix</span></a>
+<a class="sourceLine" id="cb27-2" title="2">A &lt;-<span class="st"> </span><span class="kw">matrix</span>(<span class="kw">c</span>(<span class="fl">0.8</span>,<span class="fl">0.6</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="fl">0.8</span>,<span class="fl">0.7</span>),<span class="dt">nrow=</span><span class="dv">4</span>,<span class="dt">ncol=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb27-3" title="3"><span class="co">#Input.Matrix</span></a>
+<a class="sourceLine" id="cb27-4" title="4">B &lt;-<span class="kw">matrix</span>(<span class="kw">c</span>(<span class="dv">0</span>,<span class="dv">0</span>,<span class="op">-</span><span class="fl">0.8</span>,<span class="op">-</span><span class="fl">0.7</span>,<span class="dv">1</span>,<span class="op">-</span><span class="fl">0.2</span>,<span class="fl">0.8</span>,<span class="fl">0.7</span>,<span class="dv">0</span>,<span class="dv">0</span>,<span class="op">-</span><span class="fl">0.2</span>,<span class="dv">1</span>),<span class="dt">nrow=</span><span class="dv">6</span>,<span class="dt">ncol=</span><span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb27-5" title="5"><span class="kw">Align.Matrix</span>(<span class="dt">Order.Matrix=</span>A, <span class="dt">Input.Matrix=</span>B)</a></code></pre></div>
+<pre><code>##      [,1] [,2]
+## [1,] 0.80  0.0
+## [2,] 0.70  0.0
+## [3,] 0.00  0.8
+## [4,] 0.00  0.7
+## [5,] 1.00  0.2
+## [6,] 0.20  1.0
+## [7,] 0.01  0.0</code></pre>
+<p>The output is a 7-by-2 matrix (p+m+1-by-m). The first p rows of the output matrix are factor loadings of the best match, the next m rows are factor correlations of the best match, and the last row contains information of the sums of squared deviations of the best match.</p>
+</div>
+<div id="references" class="section level2">
+<h2>References</h2>
+<p>Browne, M. W. (2001). An overview of analytic rotation in exploratory factor analysis. Multivariate Behavioral Research, 36, 111–150. : 10.1207/s15327906mbr3601_05</p>
+<p>Browne, M. W., Cudeck, R., Tateneni, K., &amp; Mels, G. (2010). CEFA 3.04: Comprehensive Exploratory Factor Analysis.</p>
+<p>Cheung, F. M., Leung, K., Fan, R., Song, W., Zhang, J., &amp; Zhang, J. (1996). Development of the Chinese Personality Assessment Inventory (CPAI). Journal of Cross-Cultural Psychology, 27, 181–199. : 10.1177/0022022196272003</p>
+<p>Gorsuch, R. L. (1983). Factor analysis (2nd ed.). Mahwah, NJ: Lawrence Erlbaum Associates. : 10.4324/9780203781098</p>
+<p>Hattori, M., Zhang, G., &amp; Preacher, K. J. (2017). Multiple local solutions and geomin rotation. Multivariate Behavioral Research, 52, 720–731. : 10.1080/00273171.2017.1361312</p>
+<p>John, O. P., Donahue, E. M., &amp; Kentle, R. L. (1991). The Big Five Inventory – versions 4a and 54. Berkeley, CA: University of California, Berkeley, Institute of Personality and Social Research. : 10.1037/t07550-000</p>
+<p>Luo, S. (2005). Personality and relationship satisfaction. (unpublished studies)</p>
+<p>Luo, S., Chen, H., Yue, G., Zhang, G., Zhaoyang, R., &amp; Xu, D. (2008). Predicting marital satisfaction from self, partner, and couple characteristics: Is it me, you, or us? Journal of Personality, 76, 1231–1266. : doi.org/10.1111/j.1467-6494.2008.00520.x</p>
+<p>Resenzein, R. (1986). A structural equation analysis of Weiner’s attribution–affect model of helping behavior. Journal of Personality and Social Psychology,50, 1123–1133. :10.1037/0022-3514.50.6.1123</p>
+<p>Zhang, G. (2014). Estimating standard errors in exploratory factor analysis. Multivariate Behavioral Research, 49, 339–353. : 10.1080/00273171.2014.908271</p>
+<p>Zhang, G., Hattori, M., Trichtinger, L., &amp; Wang, X. (2018). Target rotation with both factor loadings and factor correlations. Psychological Methods. : 10.1037/met0000198</p>
+</div>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Vignette authors: Lauren Trichtinger, Guangjian Zhang, Minami Hattori<a href="#fnref1" class="footnote-back">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

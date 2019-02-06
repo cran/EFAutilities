@@ -15,7 +15,7 @@ Performs exploratory factor analysis under a variety of conditions. In particula
      normalize=FALSE, maxit=1000, geomin.delta=NULL, 
      MTarget=NULL, MWeight=NULL,
      PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, 
-     se='information', LConfid=c(0.95,0.90), CItype='pse', 
+     se='sandwich', LConfid=c(0.95,0.90), CItype='pse', 
      Ib=2000, mnames=NULL, fnames=NULL, merror='YES',
      wxt2 = 1e0)
 }
@@ -30,7 +30,7 @@ Performs exploratory factor analysis under a variety of conditions. In particula
                'ts' stands for distributions for time-series data.}  
   \item{fm}{Factor extraction methods: 'ols' (default) and 'ml'} 
   \item{rtype}{Factor rotation types: 'oblique' (default) and 'orthogonal'. Factors are correlated in 'oblique' rotation, and they are uncorrelated in 'orthogonal' rotation.}
-  \item{rotation}{ Factor rotation criteria: 'CF-varimax' (default), 'CF-quartimax', 'target', and 'geomin'. These rotation criteria can be used in both orthogonal and oblique rotation. In addition, a fifth rotation criterion 'xtarget'(extended target) rotation is available for oblique rotation. The extended target rotation allows targets to be specified on both factor loadings and factor correlations.}
+  \item{rotation}{ Factor rotation criteria: 'CF-varimax' (default), 'CF-quartimax', 'CF-equamax', 'CF-facparsim', 'CF-parsimax','target', and 'geomin'. These rotation criteria can be used in both orthogonal and oblique rotation. In addition, a fifth rotation criterion 'xtarget'(extended target) rotation is available for oblique rotation. The extended target rotation allows targets to be specified on both factor loadings and factor correlations.}
   \item{normalize}{Row standardization in factor rotation: FALSE (default) and TRUE (Kaiser standardization).} 
   \item{maxit}{Maximum number of iterations in factor rotation: 1000 (default)} 
   \item{geomin.delta}{The controlling parameter in Geomin rotation, 0.01 as the default value.}
@@ -39,7 +39,7 @@ Performs exploratory factor analysis under a variety of conditions. In particula
   \item{PhiWeight}{The m-by-m target matrix for the factor correlation matrix in xtarget rotation.}
   \item{PhiTarget}{The m-by-m weight matrix for the factor correlation matrix in xtarget rotation}
   \item{useorder}{Whether an order matrix is used for factor alignment: FALSE (default) and TRUE}
-  \item{se}{Methods for estimating standard errors for rotated factor loadings and factor correlations, 'information', 'sandwich', 'bootstrap', and 'jackknife'. For normal variables and ml estimation, the default method is 'information'. For all other situations, the default method is 'sandwich'. In addition, the 'bootstrap' and 'jackknife' methods can be used for raw data.}
+  \item{se}{Methods for estimating standard errors for rotated factor loadings and factor correlations, 'information', 'sandwich', 'bootstrap', and 'jackknife'. For normal variables and ml estimation, the default method is 'information'. For all other situations, the default method is 'sandwich'. In addition, the 'bootstrap' and 'jackknife' methods require raw data.}
   \item{LConfid}{Confidence levels for model parameters (factor loadings and factor correlations) and RMSEA, respectively: c(.95, .90) as default.}
   \item{CItype}{Type of confidence intervals: 'pse' (default) or 'percentile'. CIs with 'pse' are based on point and standard error estimates; CIs with 'percentile' are based on bootstrap percentiles.}
   \item{Ib}{The Number of bootstrap samples when se='bootstrap': 2000 (default)}
@@ -55,9 +55,9 @@ The function \code{\link{efa}} conducts exploratory factor analysis (EFA) (Gorsu
 
 Factors can be extracted using two methods: maximum likelihood estimation (ml) and ordinary least squares (ols). These factor loading matrices are referred to as unrotated factor loading matrices. The ml unrotated factor loading matrix is obtained using \code{\link[stats]{factanal}}. The ols unrotated factor loading matrix is obtained using \code{\link[stats]{optim}} where the residual sum of squares is minimized. The starting values for communalities are squared multiple correlations (SMCs). The test statistic and model fit measures are provided.
 
-Four rotation criteria (CF-varimax, CF-quartimax, geomin, and target) are available for both orthogonal rotation and oblique rotation (Browne, 2001). Additionally, a new rotation criteria, xtarget, can be specified for oblique rotation. The factor rotation methods are achieved by calling functions in the package GPArotation. CF-varimax and CF-quartimax are members of the Crawford-Fugersion family (Crawford, & Ferguson, 1970) whose kappa = 1/p and kappa = 0, respectively. They are equivalent to varimax and quartimax rotation in orthogonal rotation. The equivalence does not carry over to oblique rotation, however. Although varimax and quartimax often fail to give satisfactory results in oblique rotation, CF-varimax and CF-quartimax do give satisfactory results in many oblique rotation applications. CF-quartimax rotation is equivalent to direct oblimin rotation for oblique rotation. The target matrix in target rotation can either be a fully specified matrix or a partially specified matrix. Target rotation can be considered as a procedure which is located between EFA and CFA. In CFA, if a factor loading is specified to be zero, its value is fixed to be zero; if target rotation, if a factor loading is specified to be zero, it is made to zero as close as possible. In xtarget rotation, target values can be specified on both factor loadings and factor correlations.
+Seven rotation criteria (CF-varimax, CF-quartimax, 'CF-equamax', 'CF-facparsim', 'CF-parsimax',geomin, and target) are available for both orthogonal rotation and oblique rotation (Browne, 2001). Additionally, a new rotation criteria, xtarget, can be specified for oblique rotation. The factor rotation methods are achieved by calling functions in the package GPArotation. CF-varimax, CF-quartimax, CF-equamax, CF-facparsim, and CF-parsimax are members of the Crawford-Fugersion family (Crawford, & Ferguson, 1970) whose kappa is 1/p, 0, m/2p, 1, and (m-1)/(p+m-2) respectively where p is the number of manifest variables and m is the number of factors.  CF-varimax and CF-quartimax are equivalent to varimax and quartimax rotation in orthogonal rotation. The equivalence does not carry over to oblique rotation, however. Although varimax and quartimax often fail to give satisfactory results in oblique rotation, CF-varimax and CF-quartimax do give satisfactory results in many oblique rotation applications. CF-quartimax rotation is equivalent to direct oblimin rotation for oblique rotation. The target matrix in target rotation can either be a fully specified matrix or a partially specified matrix. Target rotation can be considered as a procedure which is located between EFA and CFA. In CFA, if a factor loading is specified to be zero, its value is fixed to be zero; if target rotation, if a factor loading is specified to be zero, it is made to zero as close as possible. In xtarget rotation, target values can be specified on both factor loadings and factor correlations.
 
-Confidences for rotated factor loadings and correlation matrices are constructed using point estimates and their standard error estimates. Standard errors for rotated factor loadings and factor correlations are computed using a sandwich method (Ogasawara, 1998; Yuan, Marshall, & Bentler, 2002), which generalizes the augmented information method (Jennrich, 1974). The sandwich standard error are consistent estimates even when the data distribution is non-normal and model error exists in the population. Sandwich standard error estimates require a consistent estimate of the asymptotic covariance matrix of manifest variable correlations. Such estimates are described in Browne & Shapiro (1986) for non-normal continuous variables and in Yuan & Schuster (2013) for Likert variables. Estimation of the asymptotic covariance matrix of polychoric correlations is slow if the EFA model involves a large number of Likert variables.
+Confidence intervals for rotated factor loadings and correlation matrices are constructed using point estimates and their standard error estimates. Standard errors for rotated factor loadings and factor correlations are computed using a sandwich method (Ogasawara, 1998; Yuan, Marshall, & Bentler, 2002), which generalizes the augmented information method (Jennrich, 1974). The sandwich standard error are consistent estimates even when the data distribution is non-normal and model error exists in the population. Sandwich standard error estimates require a consistent estimate of the asymptotic covariance matrix of manifest variable correlations. Such estimates are described in Browne & Shapiro (1986) for non-normal continuous variables and in Yuan & Schuster (2013) for Likert variables. Estimation of the asymptotic covariance matrix of polychoric correlations is slow if the EFA model involves a large number of Likert variables.
 
 When manifest variables are normally distributed (dist = 'normal') and model error does not exist (merror = 'NO'), the sandwich standard errors are equivalent to the usual standard error estimates, which come from the inverse of the information matrix. The information standard error estimates in EFA is available CEFA (Browne, Cudeck, Tateneni, & Mels, 2010) and SAS Proc Factor. Mplus (Muthen & Muthen, 2015) also implemented a version of sandwich standard errors for EFA, which are robust against non-normal distribution but not model error. Sandwich standard errors computed in \code{\link{efa}} tend to be larger than those computed in Mplus. Sandwich standard errors for non-normal distributions and with model error are equivalent to the infinitesimal jackknife standard errors described in Zhang, Preacher, & Jennrich (2012). Two computationally intensive standard error methods (se='bootstrap' and se='jackknife') are also implemented. More details on standard error estimation methods in EFA are documented in Zhang (2014).
 
@@ -151,33 +151,46 @@ res1 <- efa(x=CPAI537,factors=4, fm='ml')
 res1
   
 #1b) confidence intervals: normal, ml, oblique, CF-varimax, information, merror='NO'
-res1$rotatedlow       # lower bound for 95 percent confidence intervals for factor loadings
-res1$rotatedupper     # upper bound for 95 percent confidence intervals for factor loadings
-res1$Philow           # lower bound for 95 percent confidence intervals for factor correlations
-res1$Phiupper         # upper bound for 95 percent confidence intervals for factor correlations	
+#res1$rotatedlow     # lower bound for 95 percent confidence intervals for factor loadings
+#res1$rotatedupper   # upper bound for 95 percent confidence intervals for factor loadings
+#res1$Philow         # lower bound for 95 percent confidence intervals for factor correlations
+#res1$Phiupper       # upper bound for 95 percent confidence intervals for factor correlations	
  
 #2) continuous, ml, oblique, CF-quartimax, sandwich, merror='YES'
 #efa(x=CPAI537, factors=4, dist='continuous',fm='ml',rotation='CF-quartimax', merror='YES')
  
-#3) continuous, ols, orthogonal, geomin, sandwich, merror='Yes'
-#efa(x=CPAI537, factors=4, dist='continuous',rtype= 'orthogonal',rotation='geomin', merror='YES')
+#3) continuous, ml, oblique, CF-equamax, sandwich, merror='YES'
+#efa(x = CPAI537, factors = 4, dist = 'continuous',
+#fm = 'ml', rotation = 'CF-equamax', merror ='YES') 
+
+#4) continuous, ml, oblique, CF-facparism, sandwich, merror='YES'
+#efa(x = CPAI537, factors = 4, fm = 'ml',
+#dist = 'continuous', rotation = 'CF-facparsim', merror='YES')
+
+#5)continuous, ml, orthogonal, CF-parsimax, sandwich, merror='YES'
+#efa(x = CPAI537, factors = 4, fm = 'ml', rtype = 'orthogonal', 
+#dist = 'continuous', rotation = 'CF-parsimax', merror = 'YES') 
+
+#6) continuous, ols, orthogonal, geomin, sandwich, merror='Yes'
+#efa(x=CPAI537, factors=4, dist='continuous',
+#rtype= 'orthogonal',rotation='geomin', merror='YES')
  
-#4) ordinal, ols, oblique, CF-varimax, sandwich, merror='Yes'
+#7) ordinal, ols, oblique, CF-varimax, sandwich, merror='Yes'
 #data("BFI228")      # Big-five inventory (N = 228)
 # For ordinal data, estimating SE with the sandwich method 
 #   can take time with a dataset with 44 variables
 #reduced2 <- BFI228[,1:17] # extracting 17 variables corresponding to the first 2 factors
 #efa(x=reduced2, factors=2, dist='ordinal', merror='YES')
 
-#5) continuous, ml, oblique, Cf-varimax, jackknife
+#8) continuous, ml, oblique, Cf-varimax, jackknife
 #efa(x=CPAI537,factors=4, dist='continuous',fm='ml', merror='YES', se= 'jackknife')
 	
-#6) extracting the test statistic 
+#9) extracting the test statistic 
 #res2 <-efa(x=CPAI537,factors=4)
 #res2
 #res2$ModelF$f.stat
 	
-# #7) extended target rotation, ml
+#10) extended target rotation, ml
 # # The data come from Engle et al. (1999) on memory and intelligence.
 # datcor <- matrix(c(1.00, 0.51, 0.47, 0.35, 0.37, 0.38, 0.28, 0.34,
 #                    0.51, 1.00, 0.32, 0.35, 0.35, 0.31, 0.24, 0.28,

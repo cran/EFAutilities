@@ -1,12 +1,7 @@
 
-########################################################################
-
 Derivative.Orth.Constraints.Numerical <- function (Lambda, rotation=NULL,normalize=FALSE,geomin.delta = NULL, MWeight=NULL, MTarget=NULL) {
 
 
-### It does not invoke any external functions.
-
-#----------------------------------------------------------------
 
 vgQ.cf <- function (L, kappa = 0) 
 {
@@ -28,11 +23,6 @@ vgQ.cf <- function (L, kappa = 0)
 vgQ.pst <- function(L, W=NULL, Target=NULL){
    if(is.null(W))      stop("argument W must be specified.")
    if(is.null(Target)) stop("argument Target must be specified.")
-   # Needs weight matrix W with 1's at specified values, 0 otherwise
-   # e.g. W = matrix(c(rep(1,4),rep(0,8),rep(1,4)),8). 
-   # When W has only 1's this is procrustes rotation
-   # Needs a Target matrix Target with hypothesized factor loadings.
-   # e.g. Target = matrix(0,8,2)
    Btilde <- W * Target
    list(Gq= 2*(W*L-Btilde), 
         f = sum((W*L-Btilde)^2),
@@ -91,7 +81,7 @@ for (v in 2:m) {
   
 d.Con.Parameters
 
-} # DCon.Unrotated 
+} 
 #--------------------------------------------------------------------------------------
 
 
@@ -117,6 +107,7 @@ h.onehalf.inverse = (h.half.inverse)**3
 } # (normalize)
 
 
+
 d.Con.Parameters = matrix(0, Nc , Nq)
 
 
@@ -136,7 +127,6 @@ for (j in 1:m) {
   for (i in 1:p) {
     dZ = Z
     dZ[i,j] = eps
-
 
 
 if (rotation == 'geomin') {
@@ -165,6 +155,27 @@ else if (rotation == 'CF-quartimax') {
     (crossprod((Lambda + dZ), (vgQ.cf(Lambda + dZ, cf.kappa) $ Gq )) - 
     crossprod((Lambda - dZ), (vgQ.cf(Lambda - dZ, cf.kappa) $ Gq ))) / (2*eps)  }
 
+    
+else if (rotation == 'CF-facparsim') {
+      cf.kappa = 1
+      d.Con.Loading [1:m,1:m,i,j] =
+        (crossprod((Lambda + dZ), (vgQ.cf(Lambda + dZ, cf.kappa) $ Gq )) - 
+           crossprod((Lambda - dZ), (vgQ.cf(Lambda - dZ, cf.kappa) $ Gq ))) / (2*eps)  }
+    
+
+else if (rotation == 'CF-equamax') {
+      cf.kappa = m/(2*p)
+      d.Con.Loading [1:m,1:m,i,j] =
+        (crossprod((Lambda + dZ), (vgQ.cf(Lambda + dZ, cf.kappa) $ Gq )) - 
+           crossprod((Lambda - dZ), (vgQ.cf(Lambda - dZ, cf.kappa) $ Gq ))) / (2*eps)  }
+    
+
+else if (rotation == 'CF-parsimax') {
+      cf.kappa = (m-1)/(p+m-2)
+      d.Con.Loading [1:m,1:m,i,j] =
+        (crossprod((Lambda + dZ), (vgQ.cf(Lambda + dZ, cf.kappa) $ Gq )) - 
+           crossprod((Lambda - dZ), (vgQ.cf(Lambda - dZ, cf.kappa) $ Gq ))) / (2*eps)  }
+    
 
 else {
   stop (paste(rotation," is not for numerical approximation"))
@@ -195,7 +206,7 @@ if (normalize) {
       tempc2L[k,] = tempc2L[k,] * h.half.inverse[k] - temp[k] * h.onehalf.inverse[k] * Lambda0[k,]
       } # k
 
-} # (normalize)
+} 
 
 
       for (l in 1:m) {
@@ -204,14 +215,13 @@ if (normalize) {
  
 
   } # (i in 1:m)
-} # (j in 1:m)
+} 
 
-}  ### ((rotation == 'ml') | (rotation == 'ols'))
+} 
 
 
 d.Con.Parameters
 
-} ### Derivative.Orth.Constraints.Numerical
-
+} 
 
 ##############################################################

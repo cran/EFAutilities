@@ -4,7 +4,7 @@
 
 \title{Factor Alignment}
 
-\description{The function is to align a factor solution according to an order matrix.  The output matrix is a (p+m+1) by m matrix, where the first p rows are factor loadings of the best match, the next m rows are factor correlations of the best match, and the last row contains the sums of squared deviations for the best match and the second best match. The difference between the best match and the second best match could be considered as a confidence on the success of the aligning procedure.}
+\description{The function is to align a factor solution according to an order matrix.  The output matrix is a (p+m+1) by m matrix, where the first p rows are factor loadings of the best match, the next m rows are factor correlations of the best match, and the last row contains the sums of squared deviations for the best match and the second best match. The difference between the best match and the second best match could be considered as a confidence on the success of the aligning procedure (a computationally more efficient method exists for some conditions; whenever this occurs we only report that of the best match).}
 
 \usage{
 Align.Matrix(Order.Matrix, Input.Matrix, Weight.Matrix=NULL)
@@ -24,6 +24,7 @@ Align.Matrix is an R function to reflect and interchange columns of Input.Matrix
 
 
 \author{Guangjian Zhang}
+
 
 \examples{
 #Order Matrix

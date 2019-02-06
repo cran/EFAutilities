@@ -1,7 +1,7 @@
 
-
 oblq.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
                           PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, wxt2=1e0) {
+
 
 
 if (is.null(rotation)) stop ("No rotaton criterion is specified for numberical approximation")
@@ -18,7 +18,6 @@ Nq = p * m + m * (m - 1) / 2 + p  # the number of parameters
 PM = Lambda %*% Phi %*% t(Lambda) 
 PM = PM - diag(diag(PM)) + diag(p)
 
-##
 
 if (modelerror== 'NO') Rsample = PM
 
@@ -57,6 +56,18 @@ Olq.Con.Parameters = Extended.CF.Family.c.2.LPhi (Lambda, Phi, 'CF-varimax',norm
 
 Olq.Con.Parameters = Extended.CF.Family.c.2.LPhi (Lambda, Phi, 'CF-quartimax',normalize)
 
+} else if (rotation=='CF-facparsim') {
+  
+  Olq.Con.Parameters = Extended.CF.Family.c.2.LPhi (Lambda, Phi, 'CF-facparsim',normalize)
+  
+} else if (rotation=='CF-equamax') {
+  
+  Olq.Con.Parameters = Extended.CF.Family.c.2.LPhi (Lambda, Phi, 'CF-equamax',normalize)
+  
+} else if (rotation=='CF-parsimax') {
+  
+  Olq.Con.Parameters = Extended.CF.Family.c.2.LPhi (Lambda, Phi, 'CF-parsimax',normalize)
+  
 } else if (rotation=='geomin') {
 
 if (is.null(geomin.delta)) geomin.delta = 0.01
@@ -69,7 +80,7 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normal
 
 } else if (rotation=='xtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',normalize,MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2) # 2017-11-28, GZ!
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',normalize,MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2) 
 
 
 } else {
@@ -109,10 +120,9 @@ Phi.se = Phi.se + t(Phi.se)
 
 Psi.se <- SE[(p*m+m*(m-1)/2+1):Nq]
 
-##
-## list(Lambda.se = Lambda.se, Phi.se = Phi.se, Psi.se = Psi.se, Temp.Bigger = Temp.Bigger, Hessian = Hessian)
+
 
 list(Lambda.se = Lambda.se, Phi.se = Phi.se, Psi.se = Psi.se)
 
-} # oblq.se.augmt
+} 
 
