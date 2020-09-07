@@ -42,7 +42,7 @@ efaMR(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL,
 
   \item{compare}{'First' (default) or 'All': The global solution is compared against all local solutions with 'First'; All solutions are compared with each other with 'All'.}
 
-  \item{plot}{Whether a bargraph that shows the number and frequencies of local solutions or not: TRUE (default) and FALSE.}
+  \item{plot}{Whether a bar graph that shows the number and frequencies of local solutions or not: TRUE (default) and FALSE.}
   \item{cex}{A tuning parameter if the plot is produced: .5 (default)}
 
   \item{normalize}{Row standardization in factor rotation: FALSE (default) and TRUE (Kaiser standardization).}   

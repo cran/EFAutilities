@@ -92,7 +92,7 @@ for (j in 1:ntemp) {
   } # i
 } # j
 
-Result * 2 # An error was corrected on 2016-05-27, Friday! Guangjian Zhang.
+Result * 2
 
 } # SHessianOLS
 

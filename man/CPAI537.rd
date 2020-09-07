@@ -1,18 +1,18 @@
 \name{CPAI537}
 \alias{CPAI537}
 \docType{data}
-\title{Composite Scores of the Chinese Personality Assessment Inventory (CAPI)
+\title{Composite Scores of the Chinese Personality Assessment Inventory (CPAI)
 %%   ~~ data name/kind ... ~~
 }
 \description{
-CPAI537 is part of a big survey study on martial satisification (Luo et al., 2008). The participants were 537 urban Chinese couples in the first year of their marriage. Included here are 28 composite scores of the CPAI (Cheung et al., 1996) for the 537 wives.
+CPAI537 is part of a big survey study on martial satisfaction (Luo et al., 2008). The participants were 537 urban Chinese couples in the first year of their marriage. Included here are 28 composite scores of the CPAI (Cheung et al., 1996) for the 537 wives.
 %%  ~~ A concise (1-5 lines) description of the dataset. ~~
 }
 \usage{data(CPAI537)}
 \format{
-The format is a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28). 
+The format is a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28).
 }
-\details{The column names stand for the following variable names:\cr 
+\details{The column names stand for the following variable names:\cr
 Nov - Novelty\cr
 Div - Diversity\cr
 Dit - Diverse thinking\cr
@@ -40,7 +40,7 @@ REN - Relationship orientation\cr
 SOC - Social sensitivity\cr
 DIS - Discipline\cr
 HAR - Harmony\cr
-T_E - Thrift vs. extravagence\cr
+T_E - Thrift vs. extravagance\cr
 
 
 %%  ~~ If necessary, more details than the __description__ above ~~

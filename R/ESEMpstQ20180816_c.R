@@ -1,6 +1,5 @@
 ### 2018-07-31, Tuesday, Guangjian Zhang
 ### SEMpstQ standards for Exploratory Structural Equation Modeling with partially specified target, oblique rotation
-### I adapt the R function of xpstQ, which stands for extended partially specified target, oblique rotation.  
 
 
 

@@ -1,6 +1,6 @@
 # EFAutilities
 
-The goal of EFAutilities is to provide a number of utilities functions for exploartory factor analysis.  In particular, it computes standard errors for model parameters under a variety of conditions. 
+The goal of EFAutilities is to provide a number of utilities functions for exploratory factor analysis.  In particular, it computes standard errors for model parameters under a variety of conditions. 
 
 
 

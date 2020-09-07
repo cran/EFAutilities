@@ -1,5 +1,3 @@
-  
-
 
 MultRandRotation <- function(unrotated, epsilon = .01, nstart = 100, 
                              plot = TRUE, cex = .5,
@@ -23,36 +21,43 @@ Make.Rot.Args <- function(rtype,rotation,normalize,p,m, geomin.delta, MTarget, M
       
     if (rotation=='CF-varimax') {
       fnames = 'cfQ'
+      rm("wxt2")
       Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize,
                        eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-quartimax') {
         fnames = 'cfQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-facparsim') {
         fnames = 'cfQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = 1, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-equamax') {
         fnames = 'cfQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = m/(2*p), normalize=normalize,
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-parsimax') {
         fnames = 'cfQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = (m-1)/(p+m-2), normalize=normalize,
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='geomin') {
         fnames = 'geominQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='target') {
         fnames = 'pstQ'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, 
                          normalize=normalize, eps=1e-6, maxit=maxit)   
         
@@ -68,36 +73,43 @@ Make.Rot.Args <- function(rtype,rotation,normalize,p,m, geomin.delta, MTarget, M
       
       if (rotation=='CF-varimax') {
         fnames = 'cfT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = 1/p, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-quartimax') {
         fnames = 'cfT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = 0, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-facparsim') {
         fnames = 'cfT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = 1, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-equamax') {
         fnames = 'cfT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = m/(2*p), normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='CF-parsimax') {
         fnames = 'cfT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),kappa = (m-1)/(p+m-2), normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='geomin') {
         fnames = 'geominT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m),delta = geomin.delta, normalize=normalize, 
                          eps=1e-6, maxit=maxit)   
         
       } else if (rotation=='target') {
         fnames = 'pstT'
+        rm("wxt2")
         Rot.Args <- list(Tmat=diag(m), W = MWeight, Target=MTarget, 
                          normalize=normalize, eps=1e-6, maxit=maxit)   
         

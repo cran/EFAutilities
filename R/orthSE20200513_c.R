@@ -1,13 +1,15 @@
 
-
-
 orth.se.augmt <- function(Lambda, Rsample, N, extraction, rotation, normalize, modelerror, 
-geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL) {
+geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL, acm.type) {
+
+# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
+# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
+# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
+# source('E:/CurrentSimulation/RCPhi/OrthDerivatives20160610.R')
 
 
 
-
-
+# We assume that the manifest variables are normally distributed for the time being.
 
 if (is.null(rotation)) stop ("No rotaton criterion is specified for numberical approximation")
 if ((rotation=='geomin') & (is.null(geomin.delta))) geomin.delta = 0.01
@@ -31,8 +33,17 @@ if (modelerror== 'NO') Rsample = PM
 if (is.null(u.r)) u.r = EliU(Rsample)
 
 
+# if (modelerror== 'YES') {
+#  u.r = EliU(Rsample) 
+# } else if (modelerror == 'NO') {
+#   u.r = EliU(PM)
+# } else {
+#  stop("Model Error option is inappropriately specified.")
+# }
 
 
+#### dg2r and Hessian include factor loadings, factor correlations and unique variances
+#### factor correlations need to be removed since the function deals with orthogonal rotation
 
 if (extraction == 'ml') {
 
@@ -52,13 +63,55 @@ stop ('Factor extraction method is incorrectly specified.')
 }
 
 
-
+#### To remove part of factor correlations
 
 dg2r.orth = matrix(0,p*p, Nq)
 dg2r.orth[,1:(p*m)] = dg2r[,1:(p*m)]
 dg2r.orth[,(p*m+1):Nq] = dg2r[,(p*m + m*(m-1)/2 + 1): (p*m + m*(m-1)/2 + p)]
 
-Ham = t(dg2r.orth) %*% u.r %*% dg2r.orth
+
+if (acm.type==1) {
+  Y.Hat = u.r
+} else {
+  
+  
+  Y.Hat = matrix(0, (p*(p-1)/2), (p*(p-1)/2))
+  u.r.col = matrix(0, (p*p), (p*(p-1)/2))
+  
+  ij = 0
+  for (j in 2:p) {
+    for (i in 1:(j-1)) {
+      ij = ij + 1
+      u.r.col[,ij] = u.r[,((j-1)*p + i)]
+    }
+  }
+  
+  
+  ij = 0
+  for (j in 2:p) {
+    for (i in 1:(j-1)) {
+      ij = ij + 1
+      Y.Hat[ij,] = u.r.col[((j-1)*p + i) , ]
+    }
+  }
+  
+}
+
+dg2r.orth.upper = matrix(0, (p*(p-1)/2), Nq)
+
+
+ij = 0
+for (j in 2:p) {
+  for (i in 1:(j-1)) {
+    ij = ij + 1
+    dg2r.orth.upper[ij,] = dg2r.orth[((j-1)*p + i) , ]
+  }
+}
+
+Ham = (t(dg2r.orth.upper) %*% Y.Hat %*% dg2r.orth.upper) * 4 # Multiplying by 4 to accommodate the partial derivatives
+
+
+# Ham = t(dg2r.orth) %*% u.r %*% dg2r.orth
 
 ###
 
@@ -101,7 +154,11 @@ Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical(Lambda,extraction)
   stop ("wrong specification for the factor rotation criterion")
 }
 
+### 
 
+### Hessian matrix includes factor loadings, factor correlations, and unique variances
+### The following code is to remove the part of factor correlations since the function deals with 
+### ORTHOGONAL rotation
 Temp.Bigger = matrix(0,(Nq+Nc),(Nq+Nc))
 Temp.Bigger[1:(p*m),1:(p*m)] = Hessian [1:(p*m),1:(p*m)]
 Temp.Bigger[(p*m + 1):(p*m + p), 1:(p*m)] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p),1:(p*m)]
@@ -143,8 +200,10 @@ for (j in 1:p) {
 } # j
 
    Com.se = sqrt(Com.se/(N-1))
+#####
 
+##
 list(Lambda.se = Lambda.se,  Psi.se = Psi.se, Com.se = Com.se)
 
-} 
+} # orth.se.augmt
 

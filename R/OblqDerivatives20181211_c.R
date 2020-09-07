@@ -233,7 +233,7 @@ if (normalize) {
 if (normalize) {
   Mt = matrix(0,p,m)
   for (ii in 1:p) {  
-  Mt[ii,] = M1[ii,] * Lambda0[ii,l] * Lambda0[ii,k] # A bug, corrected on 2018-12-11, Tuesday, G.Z.
+  Mt[ii,] = M1[ii,] * Lambda0[ii,l] * Lambda0[ii,k]
   }
   tempc2Phi[k,l] = - sum(Mt) + tempc2Phi[k,l] 
 }   
@@ -445,7 +445,7 @@ if (rotation == 'geomin') {
 
 if (rotation == 'xtarget') {
   if (is.null(wxt2)) wxt2 = 1e0
-  d.Con.Phi = DCon.RCPhi2.Phi.20170525 (Lambda,Phi, dQ.L, PhiWeight, PhiTarget, wxt2 = wxt2)  ### 2017-05-25, GZ ## 2017-11-28, GZ
+  d.Con.Phi = DCon.RCPhi2.Phi.20170525 (Lambda,Phi, dQ.L, PhiWeight, PhiTarget, wxt2 = wxt2)  
 } else {
 d.Con.Phi = Derivative.Constraints.Phi.20150526 (Lambda, Phi,dQ.L)
 }

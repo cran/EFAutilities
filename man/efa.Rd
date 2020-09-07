@@ -1,51 +1,48 @@
 \name{efa}
-
 \alias{efa}
-
 \title{Exploratory Factor Analysis}
 
 
 \description{
-Performs exploratory factor analysis under a variety of conditions. In particular, it provides standard errors for rotated factor loadings and factor correlations for normal variables, nonnormal continuous variables, and Likert scale variables with and without model error. 
+Performs exploratory factor analysis under a variety of conditions. In particular, it provides standard errors for rotated factor loadings and factor correlations for normal variables, nonnormal continuous variables, and Likert scale variables with and without model error.
 }
 
 \usage{
- efa(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL, dist='normal', 
-     fm='ols', rtype='oblique', rotation='CF-varimax', 
-     normalize=FALSE, maxit=1000, geomin.delta=NULL, 
-     MTarget=NULL, MWeight=NULL,
-     PhiWeight = NULL, PhiTarget = NULL, useorder=FALSE, 
-     se='sandwich', LConfid=c(0.95,0.90), CItype='pse', 
-     Ib=2000, mnames=NULL, fnames=NULL, merror='YES',
-     wxt2 = 1e0)
+efa(x=NULL, factors=NULL, covmat=NULL, acm=NULL, n.obs=NULL, dist='normal',
+fm='ols', mtest = TRUE, rtype='oblique', rotation='CF-varimax', normalize=FALSE,
+maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,PhiWeight = NULL,
+PhiTarget = NULL, useorder=FALSE, se='sandwich', LConfid=c(0.95,0.90),
+CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0)
 }
 
 \arguments{
   \item{x}{The raw data: an n-by-p matrix where n is number of participants and p is the number of manifest variables.}
-  \item{factors}{The number of factors m: specified by a researcher; the default one is the Kaiser rule which is the number of eigenvalues of covmat larger than one.}
-  \item{covmat}{A p-by-p manifest variable correlation matrix.}  
+  \item{factors}{The number of factors m: specified by the researcher; the default one is the Kaiser rule which is the number of eigenvalues of covmat larger than one.}
+  \item{covmat}{A p-by-p manifest variable correlation matrix.}
+  \item{acm}{A p(p-1)/2 by p(p-1)/2 asymptotic covariance matrix of correlations: specified by the researcher.  }
   \item{n.obs}{The number of participants used in calculating the correlation matrix. This is not required when the raw data (x) is provided.}
   \item{dist}{Manifest variable distributions: 'normal'(default), 'continuous', 'ordinal' and 'ts'. 'normal' stands for normal distribution.
-              'continuous' stands for nonnormal continuous distributions.  'ordinal' stands for Likert scale variable. 
-               'ts' stands for distributions for time-series data.}  
-  \item{fm}{Factor extraction methods: 'ols' (default) and 'ml'} 
+              'continuous' stands for nonnormal continuous distributions.  'ordinal' stands for Likert scale variable.
+               'ts' stands for distributions for time-series data.}
+  \item{fm}{Factor extraction methods: 'ols' (default) and 'ml'}
+  \item{mtest}{Whether the test statistic is computed: TRUE (default) and FALSE}
   \item{rtype}{Factor rotation types: 'oblique' (default) and 'orthogonal'. Factors are correlated in 'oblique' rotation, and they are uncorrelated in 'orthogonal' rotation.}
   \item{rotation}{ Factor rotation criteria: 'CF-varimax' (default), 'CF-quartimax', 'CF-equamax', 'CF-facparsim', 'CF-parsimax','target', and 'geomin'. These rotation criteria can be used in both orthogonal and oblique rotation. In addition, a fifth rotation criterion 'xtarget'(extended target) rotation is available for oblique rotation. The extended target rotation allows targets to be specified on both factor loadings and factor correlations.}
-  \item{normalize}{Row standardization in factor rotation: FALSE (default) and TRUE (Kaiser standardization).} 
-  \item{maxit}{Maximum number of iterations in factor rotation: 1000 (default)} 
+  \item{normalize}{Row standardization in factor rotation: FALSE (default) and TRUE (Kaiser standardization).}
+  \item{maxit}{Maximum number of iterations in factor rotation: 1000 (default)}
   \item{geomin.delta}{The controlling parameter in Geomin rotation, 0.01 as the default value.}
   \item{MTarget}{The p-by-m target matrix for the factor loading matrix in target rotation and xtarget rotation.}
-  \item{MWeight}{The p-by-m weight matrix for the factor loading matrix in target rotation and xtarget rotation.}
-  \item{PhiWeight}{The m-by-m target matrix for the factor correlation matrix in xtarget rotation.}
+  \item{MWeight}{The p-by-m weight matrix for the factor loading matrix in target rotation and xtarget rotation. Optional}
+  \item{PhiWeight}{The m-by-m target matrix for the factor correlation matrix in xtarget rotation. Optional}
   \item{PhiTarget}{The m-by-m weight matrix for the factor correlation matrix in xtarget rotation}
   \item{useorder}{Whether an order matrix is used for factor alignment: FALSE (default) and TRUE}
   \item{se}{Methods for estimating standard errors for rotated factor loadings and factor correlations, 'information', 'sandwich', 'bootstrap', and 'jackknife'. For normal variables and ml estimation, the default method is 'information'. For all other situations, the default method is 'sandwich'. In addition, the 'bootstrap' and 'jackknife' methods require raw data.}
   \item{LConfid}{Confidence levels for model parameters (factor loadings and factor correlations) and RMSEA, respectively: c(.95, .90) as default.}
   \item{CItype}{Type of confidence intervals: 'pse' (default) or 'percentile'. CIs with 'pse' are based on point and standard error estimates; CIs with 'percentile' are based on bootstrap percentiles.}
-  \item{Ib}{The Number of bootstrap samples when se='bootstrap': 2000 (default)}
-  \item{mnames}{Names of p manifest variables: Null (default)} 
+  \item{Ib}{The number of bootstrap samples when se='bootstrap': 2000 (default)}
+  \item{mnames}{Names of p manifest variables: Null (default)}
   \item{fnames}{Names of m factors: Null (default)}
-  \item{merror}{ Model error: 'YES' (default) or 'NO'. In general, we expect our model is a parisonmious representation to the complex real world. Thus, some amount of model error is unavailable. When merror = 'NO', the efa model is assumed to fit perfectly in the population.}
+  \item{merror}{ Model error: 'YES' (default) or 'NO'. In general, we expect our model is a parsimonious representation to the complex real world. Thus, some amount of model error is unavailable. When merror = 'NO', the efa model is assumed to fit perfectly in the population.}
   \item{wxt2}{The relative weight for factor correlations in 'xtarget' (extended target) rotation: 1 (default)}
 }
 
@@ -115,18 +112,18 @@ rotation. Psychometrika, 35 , 321-332.
 
 Engle, R. W., Tuholsjki, S.W., Laughlin, J.E., & Conway, A. R. A. (1999). Working memory, short-term memory, and general fluid intelligence: a latent-variable approach. Journal of Experimental Psychology: General, 309-331.
 
-Gorsuch, R. L. (1983). Factor analysis (2nd ed.). Mahwah, NJ: Lawrence Erlbaum Associates. 
+Gorsuch, R. L. (1983). Factor analysis (2nd ed.). Mahwah, NJ: Lawrence Erlbaum Associates.
 
 Jennrich, R. I. (1974). Simplified formula for standard errors in maximum-likelihood factor analysis. British Journal of Mathematical and Statistical Psychology, 27, 122-131.
 
-Jennrich, R. I. (2002). A simple general method for oblique rotation. Psychometrika, 67, 7-19. 
+Jennrich, R. I. (2002). A simple general method for oblique rotation. Psychometrika, 67, 7-19.
 
 Muthen, L. K., & Muthen, B. O. (1998-2015). Mplus user's guide (7th ed.). Los Angeles, CA:
 Muthen & Muthen.
 
 Ogasawara, H. (1998). Standard errors of several indices for unrotated and rotated factors. Economic Review, Otaru University of Commerce, 49(1), 21-69.
 
-Yuan, K., Marshall, L. L., & Bentler, P. M. (2002). A unified approach to exploratory factor analysis with missing data, nonnormal data, and in the presence of outliers. Psychometrika , 67 , 95-122. 
+Yuan, K., Marshall, L. L., & Bentler, P. M. (2002). A unified approach to exploratory factor analysis with missing data, nonnormal data, and in the presence of outliers. Psychometrika , 67 , 95-122.
 
 Yuan, K.-H., & Schuster, C. (2013). Overview of statistical estimation methods. In T. D. Little (Ed.), The Oxford handbook of quantitative methods (pp. 361-387). New York, NY: Oxford University Press.
 
@@ -141,55 +138,55 @@ factor analysis. Psychometrika, 77 , 634-648.
 \author{Guangjian Zhang, Ge Jiang, Minami Hattori, and Lauren Trichtinger}
 
 
-\examples{ 
+\examples{
 #Examples using the data sets included in the packages:
-  
+
 data("CPAI537")    # Chinese personality assessment inventory (N = 537)
-   
+
 #1a) normal, ml, oblique, CF-varimax, information, merror='NO'
 res1 <- efa(x=CPAI537,factors=4, fm='ml')
 res1
-  
+
 #1b) confidence intervals: normal, ml, oblique, CF-varimax, information, merror='NO'
 #res1$rotatedlow     # lower bound for 95 percent confidence intervals for factor loadings
 #res1$rotatedupper   # upper bound for 95 percent confidence intervals for factor loadings
 #res1$Philow         # lower bound for 95 percent confidence intervals for factor correlations
-#res1$Phiupper       # upper bound for 95 percent confidence intervals for factor correlations	
- 
+#res1$Phiupper       # upper bound for 95 percent confidence intervals for factor correlations
+
 #2) continuous, ml, oblique, CF-quartimax, sandwich, merror='YES'
 #efa(x=CPAI537, factors=4, dist='continuous',fm='ml',rotation='CF-quartimax', merror='YES')
- 
+
 #3) continuous, ml, oblique, CF-equamax, sandwich, merror='YES'
 #efa(x = CPAI537, factors = 4, dist = 'continuous',
-#fm = 'ml', rotation = 'CF-equamax', merror ='YES') 
+#fm = 'ml', rotation = 'CF-equamax', merror ='YES')
 
 #4) continuous, ml, oblique, CF-facparism, sandwich, merror='YES'
 #efa(x = CPAI537, factors = 4, fm = 'ml',
 #dist = 'continuous', rotation = 'CF-facparsim', merror='YES')
 
 #5)continuous, ml, orthogonal, CF-parsimax, sandwich, merror='YES'
-#efa(x = CPAI537, factors = 4, fm = 'ml', rtype = 'orthogonal', 
-#dist = 'continuous', rotation = 'CF-parsimax', merror = 'YES') 
+#efa(x = CPAI537, factors = 4, fm = 'ml', rtype = 'orthogonal',
+#dist = 'continuous', rotation = 'CF-parsimax', merror = 'YES')
 
 #6) continuous, ols, orthogonal, geomin, sandwich, merror='Yes'
 #efa(x=CPAI537, factors=4, dist='continuous',
 #rtype= 'orthogonal',rotation='geomin', merror='YES')
- 
+
 #7) ordinal, ols, oblique, CF-varimax, sandwich, merror='Yes'
 #data("BFI228")      # Big-five inventory (N = 228)
-# For ordinal data, estimating SE with the sandwich method 
+# For ordinal data, estimating SE with the sandwich method
 #   can take time with a dataset with 44 variables
 #reduced2 <- BFI228[,1:17] # extracting 17 variables corresponding to the first 2 factors
 #efa(x=reduced2, factors=2, dist='ordinal', merror='YES')
 
 #8) continuous, ml, oblique, Cf-varimax, jackknife
 #efa(x=CPAI537,factors=4, dist='continuous',fm='ml', merror='YES', se= 'jackknife')
-	
-#9) extracting the test statistic 
+
+#9) extracting the test statistic
 #res2 <-efa(x=CPAI537,factors=4)
 #res2
 #res2$ModelF$f.stat
-	
+
 #10) extended target rotation, ml
 # # The data come from Engle et al. (1999) on memory and intelligence.
 # datcor <- matrix(c(1.00, 0.51, 0.47, 0.35, 0.37, 0.38, 0.28, 0.34,
@@ -201,7 +198,7 @@ res1
 #                    0.28, 0.24, 0.29, 0.19, 0.05, 0.20, 1.00, 0.68,
 #                    0.34, 0.28, 0.32, 0.27, 0.19, 0.21, 0.68, 1.00),
 #                  ncol = 8)
-# 
+#
 # # Prepare target and weight matrices for lambda -------
 # MTarget1 <- matrix(c(9, 0, 0,
 #                      9, 0, 0,
@@ -213,21 +210,21 @@ res1
 #                      0, 0, 9), ncol = 3, byrow = TRUE)
 # MWeight1 <- matrix(0, ncol = 3, nrow = 8)
 # MWeight1[MTarget1 == 0] <- 1 # 1 corresponds to targets
-# 
+#
 # # Prepare target and weight matrices for phi ---------
 # PhiTarget1 <- matrix(c(1, 9, 9,
 #                        9, 1, 0,
 #                        9, 0, 1), ncol = 3)
 # PhiWeight1 <- matrix(0, ncol = 3, nrow = 3)
 # PhiWeight1[PhiTarget1 == 0] <- 1
-# 
+#
 # # Conduct extended target rotation -------------------
 # mod.xtarget <- efa(covmat = datcor, factors = 3, n.obs = 133,
 #                    rotation ='xtarget', fm = 'ml', useorder = T,
 #                    MTarget = MTarget1, MWeight = MWeight1,
 #                    PhiTarget = PhiTarget1, PhiWeight = PhiWeight1)
 # mod.xtarget
-# 
+#
 
 
 

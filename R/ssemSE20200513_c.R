@@ -1,18 +1,29 @@
 
-  
 ssem.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
-                          BGWeight = NULL, BGTarget = NULL,PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, wxt2=1e0) {
+                          BGWeight = NULL, BGTarget = NULL,PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, acm.type, wxt2=1e0) {
 
+
+# It contains two internal functions D.G.2.Phi and D2.G.2.Phi.N
+
+
+
+#----------------------------------------------------------------------
+
+#-------------------------------------------------------------------
+# D.BG.2.Phi computes derivatives of BG WRT Phi
 
 D.BG.2.Phi <- function(Phi,m1) {
 
+# Phi -> the factor correlation matrix, m by m, real
+# m1, the number of endogenous factors, input
 
 m = dim(Phi)[1]
 
 Result = array(rep(0,m1*m*m*m), dim=c(m1,m,m,m))
 
+# Phi = t(T) %*% T
 
- for (i in 1:m1) {   
+ for (i in 1:m1) {   # Note that we need to compute the derivative ROW by ROW rather than column by column.
 
  Phi.inv = solve(Phi[(i+1):m, (i+1):m])
  w.i = Phi[i,(i+1):m] %*% Phi.inv
@@ -37,10 +48,17 @@ Result
 } # D.BG.2.Phi
 
 
+#----------------------------------------------------------------------------------------
 
+# D.G.2.Phi differentiates Q WRT Phi.
 
 D.G.2.Phi <- function(Phi, BGWeight , BGTarget, PhiW , PhiTarget) { 
 
+# Phi -> the factor correlation matrix, m by m, real
+# BGWeight -> the weight matrix of [B|G], m1 by m, real
+# BGTarget -> the target matrix of [B|G], m1 by m, real
+# PhiW     -> the weight matrix of Phi_xi, m2 by m2,real
+# PhiTarget-> the target matrix of Phi_xi, m2 by m2,real
 
 m = dim(Phi)[1]
 m2 = dim(PhiW)[1]
@@ -64,12 +82,14 @@ if (m1 > 0) {
 
    Gq2BG = 2*(BGWeight * BG - BGtilde)
 
+#   f.BG = sum((BGWeight * BG - BGtilde)^2) 
+
 
    BG2Phi  = D.BG.2.Phi(Phi,m1)
 
    
 
-   for (i in 1:m1) { 
+   for (i in 1:m1) { # Row by Row
     for (j in (i+1):m) {
        if (BGWeight[i,j] == 1) {
           dQ2Phi = dQ2Phi + BG2Phi[i,j,1:m,1:m] * Gq2BG[i,j]
@@ -77,9 +97,9 @@ if (m1 > 0) {
      }
    }
 
-} 
+} ## (m1 > 0)
 
-
+## The targets on factor correlations among exogenous variables
 
 
 if ( m2 > 1 ) {
@@ -89,7 +109,9 @@ if ( m2 > 1 ) {
    
    Gq2phi.xi = 2*(PhiW * Phi.xi - Phitilde.xi)
 
+#   f.Phi.xi = sum((PhiW * Phi.xi - Phitilde.xi)^2) / 2  
 
+  
    for (j2 in 1:m2) {
       for (i2 in 1:m2) {
         if (PhiW[i2,j2]==1) { 
@@ -100,7 +122,7 @@ if ( m2 > 1 ) {
    }
   }
 
-} 
+} # ( m2 > 1 )
 
 Result = dQ2Phi
 
@@ -110,7 +132,15 @@ Result = dQ2Phi
 
 D2.G.2.Phi.N <- function(Phi, BGWeight , BGTarget, PhiW , PhiTarget, epsilon = 0.0001) { 
 
+# D2.G.2.Phi.N computes the second derivatives of constraint functions with regard to Phi
+# The method is a numerical method.
 
+
+# Phi -> the factor correlation matrix, m by m, real
+# BGWeight -> the weight matrix of [B|G], m1 by m, real
+# BGTarget -> the target matrix of [B|G], m1 by m, real
+# PhiW     -> the weight matrix of Phi_xi, m2 by m2,real
+# PhiTarget-> the target matrix of Phi_xi, m2 by m2,real
 
 m = dim(Phi)[1]
 
@@ -145,7 +175,7 @@ Result
 
 
 
-
+# We assume that the manifest variables are normally distributed for the time being.
 
 if (is.null(rotation)) stop ("No rotaton criterion is specified for numberical approximation")
 if ((rotation=='geomin') & (is.null(geomin.delta))) geomin.delta = 0.01
@@ -157,8 +187,8 @@ p = dim(Lambda)[1]
 m = dim(Lambda)[2]
 m2 = dim(PhiTarget)[1]
 m1 = m - m2
-Nc = m * (m-1) 
-Nq = p * m + m * (m - 1) / 2 + p  
+Nc = m * (m-1) # the number of constraints
+Nq = p * m + m * (m - 1) / 2 + p  # the number of parameters
 
 PM = Lambda %*% Phi %*% t(Lambda) 
 PM = PM - diag(diag(PM)) + diag(p)
@@ -169,18 +199,29 @@ if (modelerror== 'NO') Rsample = PM
 
 if (is.null(u.r)) u.r = EliU(Rsample)
 
+# if (is.null(u.r)) {
+
+# if (modelerror== 'YES') {
+#  u.r = EliU(Rsample) 
+#} else if (modelerror == 'NO') {
+#  u.r = EliU(PM)
+#} else {
+# stop("Model Error option is inappropriately specified.")
+#}
+# } ## (u.r == NULL)
+
 ##
 
 if (extraction == 'ml') {
 
 dg2r = D.g.2.r (Lambda, Phi, extraction='ml')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml') 
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml') ####
 
 
 } else if (extraction == 'ols') {
 
 dg2r = D.g.2.r (Lambda, Phi, extraction='ols')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols') 
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols') #####
 
 
 } else {
@@ -191,7 +232,50 @@ stop ('Factor extraction method is incorrectly specified.')
 
 ##
 
-Ham = t(dg2r) %*% u.r %*% dg2r
+
+if (acm.type==1) {
+  Y.Hat = u.r
+} else {
+  
+  
+  Y.Hat = matrix(0, (p*(p-1)/2), (p*(p-1)/2))
+  u.r.col = matrix(0, (p*p), (p*(p-1)/2))
+  
+  ij = 0
+  for (j in 2:p) {
+    for (i in 1:(j-1)) {
+      ij = ij + 1
+      u.r.col[,ij] = u.r[,((j-1)*p + i)]
+    }
+  }
+  
+  
+  ij = 0
+  for (j in 2:p) {
+    for (i in 1:(j-1)) {
+      ij = ij + 1
+      Y.Hat[ij,] = u.r.col[((j-1)*p + i) , ]
+    }
+  }
+  
+}
+
+dg2r.upper = matrix(0, (p*(p-1)/2), Nq)
+
+
+ij = 0
+for (j in 2:p) {
+  for (i in 1:(j-1)) {
+    ij = ij + 1
+    dg2r.upper[ij,] = dg2r[((j-1)*p + i) , ]
+  }
+}
+
+Ham = (t(dg2r.upper) %*% Y.Hat %*% dg2r.upper) * 4 # Multiplying by 4 to accommodate the partial derivatives
+
+
+
+# Ham = t(dg2r) %*% u.r %*% dg2r
 
 ###
 
@@ -227,12 +311,12 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normal
 
 } else if (rotation=='xtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',normalize,MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2) 
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',normalize,MWeight=MWeight, MTarget=MTarget,PhiWeight = PhiWeight, PhiTarget = PhiTarget, wxt2 = wxt2) # 2017-11-28, GZ!
 
 
 } else if (rotation=='semtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normalize,MWeight=MWeight, MTarget=MTarget) # 2018-08-13, GZ!
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normalize,MWeight=MWeight, MTarget=MTarget)
 
 T.D.G.2.Phi = D2.G.2.Phi.N (Phi, BGWeight , BGTarget, PhiWeight , PhiTarget, epsilon = 0.0001)
 
@@ -293,14 +377,13 @@ ME.se <- SE[(p*m+m*(m-1)/2+1):Nq]
 
 
 
-
 if (m1>0) {
 
 
 D.BG.Phi.2 = array(rep(0,m1*m*m*m), dim=c(m1,m,m,m))
 BG = matrix(0,m1,m)
 
- for (i in 1:m1) {   
+ for (i in 1:m1) {   # Note that we need to compute the derivative ROW by ROW rather than column by column.
 
  Phi.inv = solve(Phi[(i+1):m, (i+1):m])
  w.i = Phi[i,(i+1):m] %*% Phi.inv
@@ -321,7 +404,7 @@ BG = matrix(0,m1,m)
 
  } # (i in 1:m1)
 
-
+### Compute standard errors for BG
 ACM.phi = Sandwich[(p*m+1):(p*m+(m*(m-1)/2)),(p*m+1):(p*m+(m*(m-1)/2))]
 ACM.BG = matrix(0,m1,m)
 
@@ -373,6 +456,12 @@ Phi.xi = NULL
 Phi.xi.se = NULL
 } # (m2>1)
 
+
+
+
+
+##
+## list(Lambda.se = Lambda.se, Phi.se = Phi.se, Psi.se = Psi.se, Temp.Bigger = Temp.Bigger, Hessian = Hessian)
 
 list(Lambda.se = Lambda.se, Phi.se = Phi.se, ME.se = ME.se, BG = BG, BG.se=BG.se, psi = psi, psi.se=psi.se, Phi.xi = Phi.xi, Phi.xi.se = Phi.xi.se )
 

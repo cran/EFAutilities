@@ -1,6 +1,6 @@
 # This independent function compares multiple solutions
 # August 8, 2017
-# Updated: January 24, 2019
+
  
 
 CompareSolutions <- function(lambdas, compare = 'First'){

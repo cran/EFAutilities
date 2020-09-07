@@ -9,34 +9,37 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 # Summary 
-Exploratory factor analysis (EFA) (Gorsuch, 1983) is a popular statistical method in many disciplines (e.g., the social and behavioral sciences, education, and medical sciences). Researchers use EFA to study latent constructs (e.g., intelligence, personality traits, and emotion) whose measurements (e.g., questionnaires and fMRI time series) are always imperfect. The latent factors provide a parsimonious explanation of the relations among observed variables. EFA involves determining the number factors, estimating the unrotated factor loading matrix, conducting factor rotation, and interpreting EFA results. The EFAutilities package utilizes four utility functions for EFA and related methods. In particular, it computes standard errors for rotated factor loadings and factor correlations with a number of factor rotation criteria (Browne, 2001) and four data types (Zhang, 2014).
+Exploratory factor analysis (EFA) (Gorsuch, 1983) is a popular statistical method in many disciplines (e.g., the social and behavioral sciences, education, and medical sciences). Researchers use EFA to study latent constructs (e.g., intelligence, personality traits, and emotion) whose measurements (e.g., questionnaires and fMRI time series) are always imperfect. The latent factors provide a parsimonious explanation of the relations among observed variables. EFA involves determining the number factors, estimating the unrotated factor loading matrix, conducting factor rotation, and interpreting EFA results. The EFAutilities package utilizes five utility functions for EFA and related methods. In particular, it computes standard errors for rotated factor loadings and factor correlations with a number of factor rotation criteria (Browne, 2001) and four data types (Zhang, 2014).
 
-The R package EFAutilities includes four functions (efa, ssem, efaMR, and Align.matrix) and two data sets (CPAI537 and BFI228). In the rest of the vignette, we first describes the functions and the data sets, then illustrate the functions with several examples.
+The R package EFAutilities includes five functions (efa, ssem, efaMR, Align.matrix and PolychoricRM) and two data sets (CPAI537 and BFI228). In the rest of the vignette, we first describes the functions and the data sets, then illustrate the functions with several examples.
 
 
 # Functions
 
 **efa()**  
-The function `efa()` is the main function in the package. It conducts EFA either raw data or a correlation matrix. Four types of raw data are allowed: normal,non-normal continuous variables, Likert variables, and time series data. The function allows researcher to extract factors using either ordinary least squares (OLS) or maximum likelihood (ML) and to rotate factors obliquely or orthog- onally. Researchers can specify seven rotation criteria (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, and target) for orthogonal rotation and eight rotation criteria for (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, target, and xtarget) oblique rotation. These rotation criteria (except xtarget) are a subset of rotation criteria considered in CEFA3.0 (Browne, Cudeck, Tateneni, & Mels, 2010). The rotation criterion xtarget is a new development (Zhang, Hattori, Trichtinger, & Wang, 2018) that allows researchers to specify targets on both factor loadings and factor correlations. Researchers can compute standard errors using four methods (information, sandwich, bootstrap, and jackknife estimated). 
+The function `efa()` is the main function in the package. It conducts EFA either raw data or a correlation matrix. Four types of raw data are allowed: normal, non-normal continuous variables, Likert variables, and time series data. The function allows researcher to extract factors using either ordinary least squares (OLS) or maximum likelihood (ML) and to rotate factors obliquely or orthogonally. Researchers can specify seven rotation criteria (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, and target) for orthogonal rotation and eight rotation criteria for (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, target, and xtarget) oblique rotation. These rotation criteria (except xtarget) are a subset of rotation criteria considered in CEFA3.0 (Browne, Cudeck, Tateneni, & Mels, 2010). The rotation criterion xtarget is a new development (Zhang, Hattori, Trichtinger, & Wang, 2018) that allows researchers to specify targets on both factor loadings and factor correlations. Researchers can compute standard errors using four methods (information, sandwich, bootstrap, and jackknife estimated). 
 
 **ssem()**  
-The function `ssem()` conducts saturated structural equation modeling (SSEM), which is a re-parameterization of the rotated factor correlation matrix. All factors are exogenous in EFA, but factors can be either exogenous or endogenous in SSEM. The function allows researchers (1) to explore directional relations among common factors with flexible factor loading matrices and (2) to reexamine a SEM model that fit data poorly or encountered estimation problems like Heywood cases or non-convergence. The functions ssem() and efa() share most argements, but ssem() introduces a new rotation criterion ssemt that allows researchers to specify targets on structural parameters in SSEM.
+The function `ssem()` conducts saturated structural equation modeling (SSEM), which is a re-parameterization of the rotated factor correlation matrix. All factors are exogenous in EFA, but factors can be either exogenous or endogenous in SSEM. The function allows researchers (1) to explore directional relations among common factors with flexible factor loading matrices and (2) to reexamine a SEM model that fit data poorly or encountered estimation problems like Heywood cases or non-convergence. The functions ssem() and efa() share most arguments, but ssem() introduces a new rotation criterion ssemt that allows researchers to specify targets on structural parameters in SSEM.
 
 
 **efaMR()**   
 The function `efaMR()` compares EFA results from multiple random starts or from multiple rotation criteria. Researchers can use it to assess the computational stability of a rotation method. Hattori, Zhang, and Preacher (2017) investigate the phenomenon of local solutions for geomin rotation in a variety of situation. The functions `efaMR()` and `efa()` share many arguments, but it includes additional ones like `input.A`, `additionalRC`, `nstart`, `compare`, and `geomin.delta`.
 
 **Align.matrix()**    
-The function `Align.Matrix()` aligns a rotated factor loading matrix against an order matrix. Re- searchers can use it resolve the alignment problem, which refers to the phenomenon that the sign and ordering of factors are arbitrary in a factor loading matrix. Failing to resolve the alignment problem has a detrimental effect when comparing multiple factor analysis results. The function Align.matrix minimizes the sum of squared deviation between the rotated factor loading matrix and the order matrix. Because the function considers every possible ordering of the rotated factor loading matrix, the computational cost can be high if there are too many factors.
+The function `Align.Matrix()` aligns a rotated factor loading matrix against an order matrix. Researchers can use it resolve the alignment problem, which refers to the phenomenon that the sign and ordering of factors are arbitrary in a factor loading matrix. Failing to resolve the alignment problem has a detrimental effect when comparing multiple factor analysis results. The function Align.matrix minimizes the sum of squared deviation between the rotated factor loading matrix and the order matrix. Because the function considers every possible ordering of the rotated factor loading matrix, the computational cost can be high if there are too many factors.
+
+**PolychoricRM()**  
+The function `PolychoricRM()` estimates polychoric correlations and their asymptotic covariance matrix (ACM). 
 
 
 
 # Data Description
 
-This package includes two data sets. The first one includes 228 undergraduate students self ratings on the 44 items in the Big Five Inventory (John, Donahue, & Kentle, 1991). It is part of a study on personality and relationship satisfaction (Luo, 2005). The ratings are five-point Likert items: disagree strongly (1), disagree a little (2), neither agree nor diagree (3), agree a little (4), and agree strongly (5). The data are presented as a n by p matrix of ordinal variables, where n is the number of participants (228) and p is the number of manifest variables (44).
+This package includes two data sets. The first one includes 228 undergraduate students self ratings on the 44 items in the Big Five Inventory (John, Donahue, & Kentle, 1991). It is part of a study on personality and relationship satisfaction (Luo, 2005). The ratings are five-point Likert items: disagree strongly (1), disagree a little (2), neither agree nor disagree (3), agree a little (4), and agree strongly (5). The data are presented as a n by p matrix of ordinal variables, where n is the number of participants (228) and p is the number of manifest variables (44).
 
 
-The second one includes 28 composite scores of the Chinese personality inventory (Cheung et al., 1996) CAPI537. This data is part of a study on martial satisfaction (Luo et al., 2008). Participants of the study were 537 urban Chinese couples within the first year of their first marriage. The data are composite scores of the 537 wives. The data are presented as a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28).
+The second one includes 28 composite scores of the Chinese personality inventory (Cheung et al., 1996) CPAI537. This data is part of a study on martial satisfaction (Luo et al., 2008). Participants of the study were 537 urban Chinese couples within the first year of their first marriage. The data are composite scores of the 537 wives. The data are presented as a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28).
 
 # Illustration Examples
 We illustrate EFAutilities with five examples. Example 1 illustrates ML estimation of EFA with normal data; Example 2 illustrates OLS estimation of EFA with ordinal data; Example 3 illustrates ML estimation of SSEM with a data correlation matrix; Example 4 illustrates EFA with multiple random starting points; Example 5 illustrates the realignment of a rotated factor loading matrix against an order matrix.
@@ -97,7 +100,7 @@ data("BFI228")
 reduced2 <- BFI228[,1:17]
 ```
 
-Since the data use Likert variables, we set the argument `dist` to be `ordinal`. We can also include an argument for model error. By default, an efa model is a parisonmious representation to the complex real world. Thus, we expect some amount of model error. However, users can specify `merror='NO'`, if they believe their  efa model fits perfectly in the population. 
+Since the data use Likert variables, we set the argument `dist` to be `ordinal`. We can also include an argument for model error. By default, an efa model is a parsimonious representation to the complex real world. Thus, we expect some amount of model error. However, users can specify `merror='NO'`, if they believe their  efa model fits perfectly in the population. 
 
 
 ```{r}
@@ -159,13 +162,13 @@ PhiW <- matrix(0, m - m1, m - m1)
 ```
 We can then run the ssem function by
 ```{r}
-#SSEMres <- ssem(covmat = cormat, factors = m, exfactors = m - m1,
-#dist = "normal", n.obs = N, fm = "ml", rotation = "semtarget",
-#maxit = 10000, MTarget = MT, MWeight = MW, BGTarget = BGT, BGWeight = BGW,
-#PhiTarget = PhiT, PhiWeight = PhiW,  useorder = TRUE, se = "information",
-#mnames = mvnames, fnames = fnames)
+SSEMres <- ssem(covmat = cormat, factors = m, exfactors = m - m1,
+dist = "normal", n.obs = N, fm = "ml", rotation = "semtarget",
+maxit = 10000, MTarget = MT, MWeight = MW, BGTarget = BGT, BGWeight = BGW,
+PhiTarget = PhiT, PhiWeight = PhiW,  useorder = TRUE, se = "information",
+mnames = mvnames, fnames = fnames)
 
-#SSEMres
+SSEMres
 
 ```
 
@@ -185,7 +188,7 @@ efaMRres$MultipleSolutions$Solutions[[2]]
 The output displays the multiple factoring loadings and factor correlations matrix for the unique solutions found. Also, the comparisons should the minimum congruence and raw congruences.
 
 ## Example 5
-In Example 5, we illustrate how to align a factor loading matrix to an order matrix using the `Align.Matix` function. In additon, we align the factor correlation matrix accordingly. Let's consider a 4-by-2 factor loading matrix. The order matrix, A, is also a 4-by-2 matrix. We form the 6-by-2 input matrix, B, by stacking the factor loading matrix and factor correlation matrix together. The first 4 rows contain the factor loading matrix and the last 2 rows contain the factor correlation matrix. 
+In Example 5, we illustrate how to align a factor loading matrix to an order matrix using the `Align.Matix` function. In addition, we align the factor correlation matrix accordingly. Let's consider a 4-by-2 factor loading matrix. The order matrix, A, is also a 4-by-2 matrix. We form the 6-by-2 input matrix, B, by stacking the factor loading matrix and factor correlation matrix together. The first 4 rows contain the factor loading matrix and the last 2 rows contain the factor correlation matrix. 
 ```{r}
 #Order Matrix
 A <- matrix(c(0.8,0.6,0,0,0,0,0.8,0.7),nrow=4,ncol=2)
@@ -195,6 +198,28 @@ Align.Matrix(Order.Matrix=A, Input.Matrix=B)
 
 ```
 The output is a 7-by-2 matrix (p+m+1-by-m). The first p rows of the output matrix are factor loadings of the best match, the next m rows are factor correlations of the best match, and the last row contains information of the sums of squared deviations of the best match.
+
+
+
+## Example 6
+In Example 6, we illustrate how to obtain the polychoric correlation matrix and its asymptotic covariance matrix using the `PolychoricRM` function.  We will use the data `BFI228` which contains 5-point Likert variables. We estimate polychoric correlations from the Likert variable and specify the asymptotic covariance matrix of polychoric correlations be computed. We also specify 5 threads be utilized and add 1/(nc*nr) to all cells where nc and nr is the number of columns and rows of the contingency table respectively.
+```{r}
+#Examples using the data sets included in the packages:
+  
+data("BFI228")    # Big-five inventory (N = 228)
+
+#For ordinal data, estimating the polychoric correlation and its ACM 
+#with 5 cores and 1/(nc*nr) added to all cells
+
+polyACM = PolychoricRM(BFI228,NCore=5, IAdjust=1, estimate.acm=T)
+
+polyACM$threshold
+polyACM$correlation
+polyACM$flag
+polyACM$ACM
+
+```
+The output displays the threshold estimates, polychoric correlation, flag matrix for information on estimating the polychoric correlation correlations from the contingency table, and the asymptotic covariance matrix.
 
 ## References
 

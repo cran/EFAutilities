@@ -5,9 +5,21 @@
 
 ### The function Compute.stat implments Proposition 4 in Browne 1984.
 
-Compute.stat <- function(R0,u.r,Unrotated) {
+Compute.stat <- function(R0,u.r,Unrotated, acm.type) {
+  
+  # Input variables: 
+  # R0 -> the sample correlation matrix
+  # u.r -> the asymptotic covariance matrix of sample correlations
+  # Unrotated -> the unrotated factor loading matrix
+  # acm.type -> 1: u.r = Yhat; 2: u.r is of p2 by p2  
+  
+  # Output variables: the test statistic and the degrees of freedom
+  # statistic 
+  # df
+  
   
   # Step 0, housekeeping
+  #library(MASS)
   p = nrow(Unrotated)
   m = ncol(Unrotated)
   p.star = p * (p-1)/2
@@ -19,18 +31,18 @@ Compute.stat <- function(R0,u.r,Unrotated) {
 if (df > 0) {
     
   # Step 1, make a selection matrix
-  M.Select = matrix(0,p2,p.star)
-  ij=0
-  ij.new = 0
-  for (j in 1:p) {
-    for (i in 1:p) {
-      ij = ij + 1
-      if (i<j) {
-        ij.new = ij.new + 1
-        M.Select[ij, ij.new] = 1
-      }
-    } # i
-  } # j
+#  M.Select = matrix(0,p2,p.star)
+#  ij=0
+#  ij.new = 0
+#  for (j in 1:p) {
+#    for (i in 1:p) {
+#      ij = ij + 1
+#      if (i<j) {
+#        ij.new = ij.new + 1
+#        M.Select[ij, ij.new] = 1
+#      }
+#    } # i
+#  } # j
   
   
   # Step 2, compute the Delta matrix and its null matrix
@@ -58,36 +70,64 @@ if (df > 0) {
     } # i 
   } # j
   
-  #This was taken from MASS package, Null function to avoid inference with another function
-  null <-function(M)
-  {
-      tmp <- qr(M)
-      set <- if (tmp$rank == 0L)
-      seq_len(ncol(M))
-      else -seq_len(tmp$rank)
-      qr.Q(tmp, complete = TRUE)[, set, drop = FALSE]
-  }
+  Delta.c = Null (Delta)
   
-  Delta.c = null (Delta)
-  
-
   
   # Step 3, Compute the test statistics
   ### Step 3.1, select non-duplicated elements from the asymptotic covariance matrix
-  Y.Hat = t(M.Select) %*% u.r %*% M.Select
-  
+   if (acm.type == 1) {
+     
+     Y.Hat = u.r
+     
+   } else {
+     
+     Y.Hat = matrix(0, p.star, p.star)
+     u.r.col = matrix(0, p2, p.star)
+     
+     ij = 0
+     for (j in 2:p) {
+       for (i in 1:(j-1)) {
+         ij = ij + 1
+         u.r.col[,ij] = u.r[,((j-1)*p + i)]
+       }
+     }
+     
+     
+     ij = 0
+     for (j in 2:p) {
+       for (i in 1:(j-1)) {
+         ij = ij + 1
+         Y.Hat[ij,] = u.r.col[((j-1)*p + i) , ]
+       }
+     }
+     
+     
+   } 
+   
   ### Step 3.2, compute the residuals and select the nonduplicated elements
   Residual = R0 - Unrotated %*% t(Unrotated)
-  Residual.vector = array(Residual)
-  r.v = t(M.Select) %*% Residual.vector
+  
+  r.v = rep(0,p.star)
+  
+  ij = 0
+  for (j in 2:p) {
+    for (i in 1:(j-1)) {
+      ij = ij + 1
+      r.v[ij] = Residual[i,j]
+    }
+  }
+  
+  
   
   ### Step 3,3, compute the sample statistic
   temp.Delta.c.e = t(Delta.c) %*% r.v
+
   temp.middle = t(Delta.c) %*% Y.Hat %*% Delta.c
   
-  ev = eigen(Y.Hat)$values
+ # ev = eigen(Y.Hat)$values
+  ev = eigen(temp.middle,symmetric=TRUE,only.values=TRUE)$values
   
-  if (min(ev)<=0) {
+  if (min(ev)<= 1.0e-6) {
    statistic = NaN 
   } else {
   temp.right = solve(temp.middle, temp.Delta.c.e)
