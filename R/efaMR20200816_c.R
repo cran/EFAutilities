@@ -23,8 +23,8 @@ efaMR <- function(x=NULL, factors=NULL, covmat=NULL, n.obs=NULL,
     if (n <p) stop ("The sample size is less than the number of manifest variables!")
     
     if (dist=='ordinal') {
-      polychor= PolychoricRM(x)
-      R0 = polychor$correlation
+      polychor= get.RGamma(x)
+      R0 = polychor$R
     } else {
       R0 = cor(x)
     }

@@ -144,8 +144,8 @@ factor analysis. Psychometrika, 77 , 634-648.
 data("CPAI537")    # Chinese personality assessment inventory (N = 537)
 
 #1a) normal, ml, oblique, CF-varimax, information, merror='NO'
-res1 <- efa(x=CPAI537,factors=4, fm='ml')
-res1
+#res1 <- efa(x=CPAI537,factors=4, fm='ml')
+#res1
 
 #1b) confidence intervals: normal, ml, oblique, CF-varimax, information, merror='NO'
 #res1$rotatedlow     # lower bound for 95 percent confidence intervals for factor loadings

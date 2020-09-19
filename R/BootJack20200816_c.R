@@ -58,7 +58,7 @@ BootJack <- function(X.raw, M.order, BJ.Arg) {
       } # jackknife
       
       if (dist=='ordinal') {
-        Total.MR[i,1:p, 1:p] = PolychoricRM(Temp.raw)$correlation
+        Total.MR[i,1:p, 1:p] = get.RGamma(Temp.raw) $ R
       } else {
         Total.MR[i,1:p, 1:p] = cor(Temp.raw)
       }
