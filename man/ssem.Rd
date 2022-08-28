@@ -1,9 +1,9 @@
 \name{ssem}
 \alias{ssem}
-\title{Saturated Structural Equation Models}
+\title{Simplifying Factor Strcutral Paths by Factor Rotation: Saturated Structural Equation Models}
 
 
-\description{This function fits saturated Structural equation models (SSEM) under a variety of conditions. SSEM re-parameterizes the obliquely rotated factor correlation matrix such that factors can be either endogenous or exogenous.  In comparison, all factors are exogenous in exploratory factor analysis. Manifest variables can be normal variables, nonnormal variables, nonnormal continuous variable, Likert scale variables and time series. It also provides standard errors and confidence intervals for rotated factor loadings and structural parameters.
+\description{This function simplifies factor structural paths by factor rotation. We refer to the method as FSP or SSEM (saturated structural equation modeling). It re-parameterizes the obliquely rotated factor correlation matrix such that factors can be either endogenous or exogenous.  In comparison, all factors are exogenous in exploratory factor analysis. Manifest variables can be normal variables, nonnormal variables, nonnormal continuous variable, Likert scale variables and time series. It also provides standard errors and confidence intervals for rotated factor loadings and structural parameters.
 
 }
 
@@ -163,6 +163,8 @@ Zhang, G. (2014). Estimating standard errors in exploratory factor analysis. Mul
 
 Zhang, G., Preacher, K. J., & Jennrich, R. I. (2012). The infinitesimal jackknife with exploratory
 factor analysis. Psychometrika, 77 , 634-648.
+
+Zhang, G., Hattori, M., Trichtinger, L (In press). Rotating factors to simplify their structural paths. Psychometrika. DOI: 10.1007/s11336-022-09877-3
 
 
 }

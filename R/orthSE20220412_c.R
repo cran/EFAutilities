@@ -1,12 +1,14 @@
 
+#### 2017-03-27, Monday, Guangjian Zhang, standard errors for commuanalities
+#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions. 
+#### 2016-06-02, Thursday, Guangjian Zhang
+
+
 orth.se.augmt <- function(Lambda, Rsample, N, extraction, rotation, normalize, modelerror, 
-geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL, acm.type) {
+geomin.delta=NULL, MTarget=NULL, MWeight=NULL, u.r = NULL, acm.type,I.cr=NULL, psi.cr=NULL) {
 
-# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
-# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/OrthDerivatives20160610.R')
-
+# It invokes external functions (EliU,D.g.2.r, EFA.Hessian, Extended.CF.Family.c.2.LPhi,Derivative.Constraints.Numerical) 
+  
 
 
 # We assume that the manifest variables are normally distributed for the time being.
@@ -18,13 +20,32 @@ if (is.null(modelerror)) modelerror='YES'
 
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
+
+
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
 Nc = m * (m-1) / 2 # the number of constraints
-Nq = p * m + p  # the number of parameters
+Nq = p * m + p + n.cr  # the number of parameters
+npsi = p + n.cr
+
 
 Phi = diag(m)
 
 PM = Lambda %*% t(Lambda) 
 PM = PM - diag(diag(PM)) + diag(p)
+
+
+if (n.cr>0) {
+  for (i in 1:n.cr) {
+    PM[I.cr[i,1],I.cr[i,2]] = PM[I.cr[i,1],I.cr[i,2]] + psi.cr[p+i]
+    PM[I.cr[i,2],I.cr[i,1]] = PM[I.cr[i,2],I.cr[i,1]] + psi.cr[p+i]
+  }
+}
+
 
 ##
 
@@ -47,14 +68,14 @@ if (is.null(u.r)) u.r = EliU(Rsample)
 
 if (extraction == 'ml') {
 
-dg2r = D.g.2.r (Lambda, Phi, extraction='ml')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml')
+dg2r = D.g.2.r (Lambda, Phi, extraction='ml',I.cr, psi.cr)
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml',I.cr, psi.cr)
 
 
 } else if (extraction == 'ols') {
 
-dg2r = D.g.2.r (Lambda, Phi, extraction='ols')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols')
+dg2r = D.g.2.r (Lambda, Phi, extraction='ols',I.cr, psi.cr)
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols',I.cr, psi.cr)
 
 
 } else {
@@ -67,8 +88,10 @@ stop ('Factor extraction method is incorrectly specified.')
 
 dg2r.orth = matrix(0,p*p, Nq)
 dg2r.orth[,1:(p*m)] = dg2r[,1:(p*m)]
-dg2r.orth[,(p*m+1):Nq] = dg2r[,(p*m + m*(m-1)/2 + 1): (p*m + m*(m-1)/2 + p)]
+dg2r.orth[,(p*m+1):Nq] = dg2r[,(p*m + m*(m-1)/2 + 1): (p*m + m*(m-1)/2 + npsi)]
 
+
+## start of 2020-05-13, GZ
 
 if (acm.type==1) {
   Y.Hat = u.r
@@ -109,6 +132,8 @@ for (j in 2:p) {
 }
 
 Ham = (t(dg2r.orth.upper) %*% Y.Hat %*% dg2r.orth.upper) * 4 # Multiplying by 4 to accommodate the partial derivatives
+
+## end of 2020-05-13, GZ
 
 
 # Ham = t(dg2r.orth) %*% u.r %*% dg2r.orth
@@ -159,15 +184,17 @@ Orth.Con.Parameters = Derivative.Orth.Constraints.Numerical(Lambda,extraction)
 ### Hessian matrix includes factor loadings, factor correlations, and unique variances
 ### The following code is to remove the part of factor correlations since the function deals with 
 ### ORTHOGONAL rotation
+
+
 Temp.Bigger = matrix(0,(Nq+Nc),(Nq+Nc))
 Temp.Bigger[1:(p*m),1:(p*m)] = Hessian [1:(p*m),1:(p*m)]
-Temp.Bigger[(p*m + 1):(p*m + p), 1:(p*m)] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p),1:(p*m)]
-Temp.Bigger[1:(p*m),(p*m + 1):(p*m + p)] = Hessian [1:(p*m),(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p)]
-Temp.Bigger[(p*m+1):Nq, (p*m+1):Nq] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p),(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + p)]
+Temp.Bigger[(p*m + 1):(p*m + npsi), 1:(p*m)] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + npsi),1:(p*m)]
+Temp.Bigger[1:(p*m),(p*m + 1):(p*m + npsi)] = Hessian [1:(p*m),(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + npsi)]
+Temp.Bigger[(p*m+1):Nq, (p*m+1):Nq] = Hessian [(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + npsi),(p*m + m*(m-1)/2 + 1):(p*m + m*(m-1)/2 + npsi)]
 
 if (m>1) {
-Temp.Bigger[1:Nq,(Nq+1):(Nq+Nc)] = t(Orth.Con.Parameters)
-Temp.Bigger[(Nq+1):(Nq+Nc),1:Nq] = Orth.Con.Parameters
+Temp.Bigger[1:(p*m),(Nq+1):(Nq+Nc)] = t(Orth.Con.Parameters[,1:(p*m)])
+Temp.Bigger[(Nq+1):(Nq+Nc),1:(p*m)] = Orth.Con.Parameters[,1:(p*m)]
 }
 
 Temp.Bigger.inverse = solve(Temp.Bigger)

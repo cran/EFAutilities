@@ -7,13 +7,16 @@
 Performs exploratory factor analysis under a variety of conditions. In particular, it provides standard errors for rotated factor loadings and factor correlations for normal variables, nonnormal continuous variables, and Likert scale variables with and without model error.
 }
 
+
 \usage{
-efa(x=NULL, factors=NULL, covmat=NULL, acm=NULL, n.obs=NULL, dist='normal',
+efa(x=NULL, factors=NULL, covmat=NULL, acm=NULL, n.obs=NULL, dist='normal', 
 fm='ols', mtest = TRUE, rtype='oblique', rotation='CF-varimax', normalize=FALSE,
-maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,PhiWeight = NULL,
-PhiTarget = NULL, useorder=FALSE, se='sandwich', LConfid=c(0.95,0.90),
-CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0)
+maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,PhiWeight = NULL, 
+PhiTarget = NULL, useorder=FALSE, se='sandwich', LConfid=c(0.95,0.90), 
+CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0, 
+I.cr=NULL, PowerParam = c(0.05,0.3)) 
 }
+
 
 \arguments{
   \item{x}{The raw data: an n-by-p matrix where n is number of participants and p is the number of manifest variables.}
@@ -44,6 +47,8 @@ CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0)
   \item{fnames}{Names of m factors: Null (default)}
   \item{merror}{ Model error: 'YES' (default) or 'NO'. In general, we expect our model is a parsimonious representation to the complex real world. Thus, some amount of model error is unavailable. When merror = 'NO', the efa model is assumed to fit perfectly in the population.}
   \item{wxt2}{The relative weight for factor correlations in 'xtarget' (extended target) rotation: 1 (default)}
+  \item{I.cr}{a n.cr-by-2 matrix for specifying correlated residuals: each row corresponds to such a residual, the two columns specify the row and the column of the residual.}
+  \item{PowerParam}{Power analysis related parameters: (0.05, 0.30) as default. The alpha level of the tests is 0.05, and a salient loading is at least 0.30.}
 }
 
 
@@ -73,9 +78,17 @@ An object of class efa, which includes:
 
 \item{heywood}{the number of heywood cases}
 
+\item{i.boundary.cr}{the number of boundary estimates of residual correlations}
+
+\item{nq}{the number of model parameters}
+
+\item{compsi}{Eigenvalues, SMCs (starting values for communality), communality, and unique variance}
+
 \item{R0}{the sample correlation matrix}
 
 \item{Phat}{the model implied correlation matrix}
+
+\item{Psi}{Unique variances (and Residual Correlations)}
 
 \item{Residual}{the residual correlation matrix}
 
@@ -87,6 +100,8 @@ An object of class efa, which includes:
 
 \item{Phise}{the standard errors for rotated factor correlations}
 
+\item{Psise}{the standard errors for Unique variances (and Residual Correlations)}
+
 \item{ModelF}{the test statistic and measures of model fit}
 
 \item{rotatedlow}{the lower bound of confidence levels for factor loadings}
@@ -96,6 +111,18 @@ An object of class efa, which includes:
 \item{Philow}{the lower bound of confidence levels for factor correlations}
 
 \item{Phiupper}{the lower bound of confidence levels for factor correlations}
+
+\item{Psilow}{the lower bound of confidence levels for unique variances (and residual correlations)}
+
+\item{Psiupper}{the upper bound of confidence levels for unique variances (and residual correlations)}
+
+\item{N0Lambda}{The required sample sizes for signficant factor loadings (H0: lambda=0)}
+
+\item{N1Lambda}{The required sample sizes for signficant factor loadings (H0: lambda=Salient)}
+
+\item{N0Phi}{The required sample sizes for signficant factor correlations (H0: rho=0)}
+
+\item{N1Phi}{The required sample sizes for signficant factor correlations (H0: rho=salient)}
 
 }
 
@@ -226,6 +253,29 @@ data("CPAI537")    # Chinese personality assessment inventory (N = 537)
 # mod.xtarget
 #
 
+#11) EFA with correlated residuals
+# The data is a subset of the study reported by Watson Clark & Tellegen, A. (1988). 
+
+# xcor <- matrix(c(
+#  1.00,  0.37,  0.29,  0.43, -0.07, -0.05, -0.04, -0.01,
+#  0.37,  1.00,  0.51,  0.37, -0.03, -0.03, -0.06, -0.03,
+#  0.29,  0.51,  1.00,  0.37, -0.03, -0.01, -0.02, -0.04,
+#  0.43,  0.37,  0.37,  1.00, -0.03, -0.03, -0.02, -0.01,
+# -0.07, -0.03, -0.03, -0.03,  1.00,  0.61,  0.41,  0.32,
+# -0.05, -0.03, -0.01, -0.03,  0.61,  1.00,  0.47,  0.38,
+# -0.04, -0.06, -0.02, -0.02,  0.41,  0.47,  1.00,  0.47,
+# -0.01, -0.03, -0.04, -0.01,  0.32,  0.38,  0.47,  1.00),
+# ncol=8)
+
+# n.cr=2
+# I.cr = matrix(0,n.cr,2)
+
+# I.cr[1,1] = 5
+# I.cr[1,2] = 6
+# I.cr[2,1] = 7
+# I.cr[2,2] = 8
+
+# efa (covmat=PANAS8.cor,factors=2, n.obs=1657, I.cr=I.cr)
 
 
 }

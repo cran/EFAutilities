@@ -1,7 +1,15 @@
+#### 2018-08-13, Monday, Guangjian Zhang, SE estimates for SSEM
+#### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions
+#### 2016-06-02, Thursday, Guangjian Zhang
+
 
 ssem.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
                           BGWeight = NULL, BGTarget = NULL,PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, acm.type, wxt2=1e0) {
 
+# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
+# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
+# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
+# source('E:/CurrentSimulation/RCPhi/OblqDerivatives20160613.R')
 
 # It contains two internal functions D.G.2.Phi and D2.G.2.Phi.N
 
@@ -11,6 +19,7 @@ ssem.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normali
 
 #-------------------------------------------------------------------
 # D.BG.2.Phi computes derivatives of BG WRT Phi
+# It used to be called D.BG.2.Phi 
 
 D.BG.2.Phi <- function(Phi,m1) {
 
@@ -232,6 +241,7 @@ stop ('Factor extraction method is incorrectly specified.')
 
 ##
 
+## start of 2020-05-13, GZ
 
 if (acm.type==1) {
   Y.Hat = u.r
@@ -273,6 +283,7 @@ for (j in 2:p) {
 
 Ham = (t(dg2r.upper) %*% Y.Hat %*% dg2r.upper) * 4 # Multiplying by 4 to accommodate the partial derivatives
 
+## end of 2020-05-13, GZ
 
 
 # Ham = t(dg2r) %*% u.r %*% dg2r
@@ -316,7 +327,7 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',norma
 
 } else if (rotation=='semtarget') {
 
-Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normalize,MWeight=MWeight, MTarget=MTarget)
+Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'target',normalize,MWeight=MWeight, MTarget=MTarget) # 2018-08-13, GZ!
 
 T.D.G.2.Phi = D2.G.2.Phi.N (Phi, BGWeight , BGTarget, PhiWeight , PhiTarget, epsilon = 0.0001)
 
@@ -376,6 +387,14 @@ Phi.se = Phi.se + t(Phi.se)
 ME.se <- SE[(p*m+m*(m-1)/2+1):Nq]
 
 
+####
+# 2018-08-13, Monday
+# The task is to use the delta method to compute SEs for elements in Beta, Gamma, and Phi_xi
+# Compute point estimates
+# Compute derivatives of BG and Phi with regard to phi
+
+
+# Compute derivatives of BG WRT Phi, Note that Phi is a symmetric matrix
 
 if (m1>0) {
 
@@ -457,6 +476,9 @@ Phi.xi.se = NULL
 } # (m2>1)
 
 
+
+# End of the part added on 2018-08-14, Tuesday!
+###
 
 
 

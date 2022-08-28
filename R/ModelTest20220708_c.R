@@ -1,3 +1,6 @@
+### Adding the option of correlated residuals on 2022-04-22, Guangjian Zhang.
+
+
 ### It contains two functions compute.stat and Model.Fit
 ### The file was made on 2017-08-08
 
@@ -5,13 +8,15 @@
 
 ### The function Compute.stat implments Proposition 4 in Browne 1984.
 
-Compute.stat <- function(R0,u.r,Unrotated, acm.type) {
+Compute.stat <- function(R0,u.r,Unrotated, acm.type, I.cr=NULL, psi.cr=NULL) {
   
   # Input variables: 
   # R0 -> the sample correlation matrix
   # u.r -> the asymptotic covariance matrix of sample correlations
   # Unrotated -> the unrotated factor loading matrix
   # acm.type -> 1: u.r = Yhat; 2: u.r is of p2 by p2  
+  # I.cr -> a (n.cr by 2) matrix of the locations of correlated residuals
+  # psi.cr -> (p + n.cr)-component vector, the first p components are unique variances and the last n.cr elements are residual correlations
   
   # Output variables: the test statistic and the degrees of freedom
   # statistic 
@@ -19,14 +24,21 @@ Compute.stat <- function(R0,u.r,Unrotated, acm.type) {
   
   
   # Step 0, housekeeping
-  #library(MASS)
+#   library(MASS)
   p = nrow(Unrotated)
   m = ncol(Unrotated)
   p.star = p * (p-1)/2
   p2 = p * p
   
+  
+  if (is.null(I.cr)) 
+  {n.cr = 0} else{
+    n.cr = nrow(I.cr)
+  }
+  
+  
   # Step 0.1, compute df
-  df = ((p-m)**2 - p - m ) /2
+  df = ((p-m)**2 - p - m ) /2 - n.cr
   
 if (df > 0) {
     
@@ -47,9 +59,10 @@ if (df > 0) {
   
   # Step 2, compute the Delta matrix and its null matrix
   
-  Delta.3d = array( rep(0, p*p*( p*m)), dim=c(p,p,( p*m ) ))
+  Delta.3d = array( rep(0, p*p*( p*m + n.cr)), dim=c(p,p,( p*m + n.cr ) ))
   
   
+  # unrotated factor loadings
   ij = 0
   
   for (j in 1:m) {
@@ -60,13 +73,25 @@ if (df > 0) {
     } # i
   } # j
   
-  Delta = matrix(0,p.star,(p*m))
+  # correlated residuals
+  if (n.cr>0)  {
+     for (j in 1: n.cr) {
+       ij = ij + 1
+       Delta.3d [I.cr[j,1],I.cr[j,2], ij] = 1
+       Delta.3d [I.cr[j,2],I.cr[j,1], ij] = 1
+     }    
+  }
+    
+
+  # Convert the 3d array of Delta to a 2d array
+  
+  Delta = matrix(0,p.star,(p*m + n.cr))
   
   ij.new=0
   for (j in 2:p) {
     for (i in 1:(j-1)) {
       ij.new = ij.new + 1
-      Delta[ij.new,1:(p*m)] = Delta.3d[i,j,1:(p*m)]
+      Delta[ij.new,1:(p*m + n.cr)] = Delta.3d[i,j,1:(p*m + n.cr)]
     } # i 
   } # j
   
@@ -106,6 +131,14 @@ if (df > 0) {
    
   ### Step 3.2, compute the residuals and select the nonduplicated elements
   Residual = R0 - Unrotated %*% t(Unrotated)
+  
+  if (n.cr > 0) { 
+    
+    for (i in 1:n.cr) {
+      Residual[I.cr[i,1],I.cr[i,2]] = Residual[I.cr[i,1],I.cr[i,2]] - psi.cr[p+i]
+      Residual[I.cr[i,2],I.cr[i,1]] = Residual[I.cr[i,2],I.cr[i,1]] - psi.cr[p+i]
+    }      
+  } 
   
   r.v = rep(0,p.star)
   
@@ -148,15 +181,24 @@ if (df > 0) {
 
 
 
-Model.Fit <- function(statistic.sample,fm,p,m,n,confid.level) {
+Model.Fit <- function(statistic.sample,fm,p,m,n,confid.level, I.cr=NULL) {
 
 ## Model.Fit computes p values for close fit, perfect fit, RMSEA and its confidence intervals,
 ## ECVI and its confidence intervals for ML  
     
   ## Housekeeping
+  if (is.null(I.cr)) 
+  {n.cr = 0} else{
+    n.cr = nrow(I.cr)
+  }
+  
+  
   pstar = p * (p-1)/2
-  q = p * m - m * (m-1) /2
+  q = p * m - m * (m-1) /2 + n.cr
+  
+  
   df = pstar - q
+  
   q = q + p # unique variances are also paramaters
   
   ## Compute an estimate for ECVI

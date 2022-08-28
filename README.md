@@ -1,3 +1,4 @@
+
 # EFAutilities
 
 The goal of EFAutilities is to provide a number of utilities functions for exploratory factor analysis.  In particular, it computes standard errors for model parameters under a variety of conditions. 
@@ -7,6 +8,7 @@ The goal of EFAutilities is to provide a number of utilities functions for explo
 This package can be installed directly from CRAN:
 
 install.packages("EFAutilities")
+
 library(EFAutilities)
 
 
@@ -17,7 +19,9 @@ Examples using the data sets included in the packages:
 
 data("CPAI537")                   # Chinese personality assessment inventory (N = 537)
 
-efa(x=CPAI537,factors=4, fm='ml') # normal, ml, oblique, CF-varimax, information, merror='NO'
+efa(x=CPAI537,factors=4) # Extract four factors 
+
 ```R
 ...
 ```
+

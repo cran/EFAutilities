@@ -1,15 +1,13 @@
 ---
-title: "EFAutilities"
-author: "Guangjian Zhang, Ge Jiang, Minami Hattori, and Lauren Trichtinger ^[Vignette authors: Lauren Trichtinger, Guangjian Zhang, Minami Hattori]"
-date: "`r Sys.Date()`"
+title: "Examples"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{EFAutilities}
+  %\VignetteIndexEntry{Examples}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---
 # Summary 
-Exploratory factor analysis (EFA) (Gorsuch, 1983) is a popular statistical method in many disciplines (e.g., the social and behavioral sciences, education, and medical sciences). Researchers use EFA to study latent constructs (e.g., intelligence, personality traits, and emotion) whose measurements (e.g., questionnaires and fMRI time series) are always imperfect. The latent factors provide a parsimonious explanation of the relations among observed variables. EFA involves determining the number factors, estimating the unrotated factor loading matrix, conducting factor rotation, and interpreting EFA results. The EFAutilities package utilizes five utility functions for EFA and related methods. In particular, it computes standard errors for rotated factor loadings and factor correlations with a number of factor rotation criteria (Browne, 2001) and four data types (Zhang, 2014).
+Exploratory factor analysis (EFA) (Gorsuch, 1983) is a popular statistical method in many disciplines (e.g., the social and behavioral sciences, education, and medical sciences). Researchers use EFA to study constructs (e.g., intelligence, personality traits, and emotion) whose measurements (e.g., questionnaires and wearable sensors) are often contaminated with error. These constructs are called latent factors and their measurements are called observed variables. The latent factors provide a parsimonious explanation of the relations among observed variables. EFA involves determining the number factors, extracting the unrotated factor loading matrix, rotating the matrix, and interpreting the EFA results. The EFAutilities package utilizes four utility functions for EFA and related methods. In particular, it computes standard errors for rotated factor loadings and factor correlations under a variety of conditions (Browne, 2001; Zhang, 2014).
 
 The R package EFAutilities includes four functions (efa, ssem, efaMR, and Align.matrix) and two data sets (CPAI537 and BFI228). In the rest of the vignette, we first describes the functions and the data sets, then illustrate the functions with several examples.
 
@@ -17,10 +15,10 @@ The R package EFAutilities includes four functions (efa, ssem, efaMR, and Align.
 # Functions
 
 **efa()**  
-The function `efa()` is the main function in the package. It conducts EFA either raw data or a correlation matrix. Four types of raw data are allowed: normal, non-normal continuous variables, Likert variables, and time series data. The function allows researcher to extract factors using either ordinary least squares (OLS) or maximum likelihood (ML) and to rotate factors obliquely or orthogonally. Researchers can specify seven rotation criteria (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, and target) for orthogonal rotation and eight rotation criteria for (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, target, and xtarget) oblique rotation. These rotation criteria (except xtarget) are a subset of rotation criteria considered in CEFA3.0 (Browne, Cudeck, Tateneni, & Mels, 2010). The rotation criterion xtarget is a new development (Zhang, Hattori, Trichtinger, & Wang, 2018) that allows researchers to specify targets on both factor loadings and factor correlations. Researchers can compute standard errors using four methods (information, sandwich, bootstrap, and jackknife estimated). 
+The function `efa()` is the main function in the package. It conducts EFA with either raw data or a correlation matrix. Four types of raw data are allowed: normal, non-normal continuous variables, Likert variables, and time series data. The function allows researcher to extract factors using either ordinary least squares (OLS) or maximum likelihood (ML). Both oblique rotation or orthogonal rotation are available with seven rotation criteria (CF-varimax, CF-quartimax, CF-facparsim, CF-equamax, CF-parsimax, geomin, and target). These rotation criteria are a subset of rotation criteria considered in CEFA3.0 (Browne, Cudeck, Tateneni, & Mels, 2010). A rotation criterion xtarget is a new development (Zhang, Hattori, Trichtinger, & Wang, 2018) that allows researchers to specify targets on both factor loadings and factor correlations. Researchers can choose four methods (information, sandwich, bootstrap, and jackknife) to estimate standard errors for rotated factor loadings and factor correlations. 
 
 **ssem()**  
-The function `ssem()` conducts saturated structural equation modeling (SSEM), which is a re-parameterization of the rotated factor correlation matrix. All factors are exogenous in EFA, but factors can be either exogenous or endogenous in SSEM. The function allows researchers (1) to explore directional relations among common factors with flexible factor loading matrices and (2) to reexamine a SEM model that fit data poorly or encountered estimation problems like Heywood cases or non-convergence. The functions ssem() and efa() share most arguments, but ssem() introduces a new rotation criterion ssemt that allows researchers to specify targets on structural parameters in SSEM.
+The function `ssem()` is a newly developed method that allows both exogenous factors and endogenous factors (Zhang, Hattori, and Trichtinger, in press). All factors are exogenous in EFA, but factors can be either exogenous or endogenous in this rotation method. We refer to this new rotation method as FSP (factor simple path). It allows researchers (1) to explore directional relations among common factors with flexible factor loading matrices and (2) to reexamine a SEM model that fit data poorly or encountered estimation problems like Heywood cases or non-convergence. 
 
 
 **efaMR()**   
@@ -39,7 +37,7 @@ This package includes two data sets. The first one includes 228 undergraduate st
 The second one includes 28 composite scores of the Chinese personality inventory (Cheung et al., 1996) CPAI537. This data is part of a study on martial satisfaction (Luo et al., 2008). Participants of the study were 537 urban Chinese couples within the first year of their first marriage. The data are composite scores of the 537 wives. The data are presented as a n by p matrix, where n is the number of participants (537) and p is the number of manifest variables (28).
 
 # Illustration Examples
-We illustrate EFAutilities with five examples. Example 1 illustrates ML estimation of EFA with normal data; Example 2 illustrates OLS estimation of EFA with ordinal data; Example 3 illustrates ML estimation of SSEM with a data correlation matrix; Example 4 illustrates EFA with multiple random starting points; Example 5 illustrates the realignment of a rotated factor loading matrix against an order matrix.
+We illustrate EFAutilities with six examples. Example 1 illustrates EFA with continuous non-normal data; Example 2 illustrates EFA with ordinal data; Example 3 illustrates EFA with correlated residuals; Example 4 illustrates SSEM (FSP); Example 5 illustrates rotation with multiple random starting points; Example 6 illustrates how to re-align a rotated factor loading matrix against an order matrix.
 
 ## Example 1
 
@@ -64,8 +62,8 @@ options(digits=3)
 mnames=c("Nov", "Div", "Dit","LEA","L_A", "AES", "E_I", "ENT", "RES", "EMO", "I_S",
          "PRA", "O_P", "MET", "FAC", "I_E", "FAM", "DEF", "G_M", "INT", "S_S", 
          "V_S", "T_M", "REN", "SOC", "DIS", "HAR", "T_E")
-fnames=c("Social Potency", "Dependability","Accommodation","Relatedness")
-res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames, fnames=fnames)
+
+res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames)
 res1
 ```
 The basic output gives you a summary of the analysis, a rotated factor loading matrix and a factor correlation matrix. We can access further results by the `$` command. For example, we can obtain the confidence intervals for the factor loadings and factor correlations with the following commands:
@@ -104,15 +102,46 @@ Since the data use Likert variables, we set the argument `dist` to be `ordinal`.
 mnames=c("talkative", "reserved_R", "fullenergy", "enthusiastic", "quiet_R","assertive", 
          "shy_R", "outgoing", "findfault_R", "helpful", "quarrels_R", "forgiving", 
          "trusting", "cold_R", "considerate", "rude_R", "cooperative")
-fnames=c("extraversion","agreeableness")
+
 res2 <-efa(x=reduced2, factors=2, dist="ordinal", rotation="geomin", merror="YES",
-           mnames=mnames, fnames=fnames)
+           mnames=mnames)
 res2
 ```
 
-
 ## Example 3
-In Example 3, we fit an SSEM to a correlation matrix (Reisenzein, 1986). The original study was on an attribution theory of helping behaviors. The sample size was 138. The SSEM involves 9 manifest variables and 3 latent factors.  We expect that an uncontrollable need results in sympathy toward the help-seeker and  sympathy further leads to helping behavior. Therefore, we denote the two  factors “helping behavior” and “sympathy” as endogenous  and the factor “controllability” as exogenous. 
+
+In Example 3, we illustrate EFA with correlated residuals. The data is a subset of the study reported by Watson Clark & Tellegen, A. (1988). The original data set contains 20 items, but we consider only 8 items.
+
+
+```{r}
+ xcor <- matrix(c(
+  1.00,  0.37,  0.29,  0.43, -0.07, -0.05, -0.04, -0.01,
+  0.37,  1.00,  0.51,  0.37, -0.03, -0.03, -0.06, -0.03,
+  0.29,  0.51,  1.00,  0.37, -0.03, -0.01, -0.02, -0.04,
+  0.43,  0.37,  0.37,  1.00, -0.03, -0.03, -0.02, -0.01,
+ -0.07, -0.03, -0.03, -0.03,  1.00,  0.61,  0.41,  0.32,
+ -0.05, -0.03, -0.01, -0.03,  0.61,  1.00,  0.47,  0.38,
+ -0.04, -0.06, -0.02, -0.02,  0.41,  0.47,  1.00,  0.47,
+ -0.01, -0.03, -0.04, -0.01,  0.32,  0.38,  0.47,  1.00),
+ ncol=8)
+
+ n.cr=2
+ I.cr = matrix(0,n.cr,2)
+
+ I.cr[1,1] = 5
+ I.cr[1,2] = 6
+ I.cr[2,1] = 7
+ I.cr[2,2] = 8
+
+ efa(covmat=xcor,factors=2, n.obs=1657, I.cr=I.cr)
+
+```
+
+
+
+
+## Example 4
+In Example 4, we illustrate FSP with a correlation matrix (Reisenzein, 1986). The original study was on an attribution theory of helping behaviors. The sample size was 138. The SSEM involves 9 manifest variables and 3 latent factors.  We expect that an uncontrollable need results in sympathy toward the help-seeker and  sympathy further leads to helping behavior. Therefore, we denote the two  factors “helping behavior” and “sympathy” as endogenous  and the factor “controllability” as exogenous. 
 
 ```{r}
 cormat <- matrix(c(1, .865, .733, .511, .412, .647, -.462, -.533, -.544,
@@ -170,8 +199,8 @@ SSEMres
 ```
 
 
-## Example 4
-In Example 4, we use the `efaMR` to compare EFA solutions from 100 random orthogonal starts.  We fit a 5-factor model to the data ``CPAI537' data fit then obtain the unrotated factor loading matrix from using ml. We conduct oblique geomin rotation.
+## Example 5
+In Example 5, we use the `efaMR` to compare EFA solutions from 100 random orthogonal starts.  We fit a 5-factor model to the data ``CPAI537' data fit then obtain the unrotated factor loading matrix from using ml. We conduct oblique geomin rotation.
 
 ```{r}
 efaMRres <-efaMR(CPAI537, factors = 5, fm ='ml', rtype ='oblique', rotation ='geomin',
@@ -184,8 +213,8 @@ efaMRres$MultipleSolutions$Solutions[[2]]
 
 The output displays the multiple factoring loadings and factor correlations matrix for the unique solutions found. Also, the comparisons should the minimum congruence and raw congruences.
 
-## Example 5
-In Example 5, we illustrate how to align a factor loading matrix to an order matrix using the `Align.Matix` function. In addition, we align the factor correlation matrix accordingly. Let's consider a 4-by-2 factor loading matrix. The order matrix, A, is also a 4-by-2 matrix. We form the 6-by-2 input matrix, B, by stacking the factor loading matrix and factor correlation matrix together. The first 4 rows contain the factor loading matrix and the last 2 rows contain the factor correlation matrix. 
+## Example 6
+In Example 6, we illustrate how to align a factor loading matrix to an order matrix using the `Align.Matix` function. In addition, we align the factor correlation matrix accordingly. Let's consider a 4-by-2 factor loading matrix. The order matrix, A, is also a 4-by-2 matrix. We form the 6-by-2 input matrix, B, by stacking the factor loading matrix and factor correlation matrix together. The first 4 rows contain the factor loading matrix and the last 2 rows contain the factor correlation matrix. 
 ```{r}
 #Order Matrix
 A <- matrix(c(0.8,0.6,0,0,0,0,0.8,0.7),nrow=4,ncol=2)
@@ -224,4 +253,6 @@ Zhang, G. (2014). Estimating standard errors in exploratory factor analysis. Mul
 Research, 49, 339–353. \doi: 10.1080/00273171.2014.908271 
 
 Zhang, G., Hattori, M., Trichtinger, L., & Wang, X. (2018). Target rotation with both factor loadings
-and factor correlations. Psychological Methods. \doi: 10.1037/met0000198  
+and factor correlations. Psychological Methods. \doi: 10.1037/met0000198 
+
+Zhang, G., Hattori, M., Trichtinger, L (In press). Rotating factors to simplify their structural paths. Psychometrika. DOI: 10.1007/s11336-022-09877-3

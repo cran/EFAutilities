@@ -1,14 +1,11 @@
 #### 2016-06-24, Friday, Guangjian Zhang. Non-normal distributions
-
+#### 2016-06-02, Thursday, Guangjian Zhang
 
 
 oblq.se.augmt <- function(Lambda, Phi, Rsample, N, extraction, rotation, normalize=FALSE, modelerror, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,
-                          PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, acm.type, wxt2=1e0) {
+                          PhiWeight = NULL, PhiTarget = NULL, u.r = NULL, acm.type, wxt2=1e0, I.cr=NULL, psi.cr=NULL) {
 
-# source('E:/CurrentSimulation/RCPhi/CorrelationDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/EFAEstimation.R')
-# source('E:/CurrentSimulation/RCPhi/EFAModelDerivatives.R')
-# source('E:/CurrentSimulation/RCPhi/OblqDerivatives20160613.R')
+# It invokes external functions (EliU,D.g.2.r, EFA.Hessian, Extended.CF.Family.c.2.LPhi,Derivative.Constraints.Numerical) 
 
 
 
@@ -22,12 +19,28 @@ if (is.null(modelerror)) modelerror='YES'
 
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
+
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
 Nc = m * (m-1) # the number of constraints
-Nq = p * m + m * (m - 1) / 2 + p  # the number of parameters
+
+Nq = p * m + m * (m - 1) / 2 + p + n.cr  # the number of parameters
 
 
 PM = Lambda %*% Phi %*% t(Lambda) 
 PM = PM - diag(diag(PM)) + diag(p)
+
+if (n.cr>0) {
+  for (i in 1:n.cr) {
+    PM[I.cr[i,1],I.cr[i,2]] = PM[I.cr[i,1],I.cr[i,2]] + psi.cr[p+i]
+    PM[I.cr[i,2],I.cr[i,1]] = PM[I.cr[i,2],I.cr[i,1]] + psi.cr[p+i]
+  }
+}
+
 
 ##
 
@@ -50,14 +63,14 @@ if (is.null(u.r)) u.r = EliU(Rsample)
 
 if (extraction == 'ml') {
 
-dg2r = D.g.2.r (Lambda, Phi, extraction='ml')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml') ####
+dg2r = D.g.2.r (Lambda, Phi, extraction='ml',I.cr, psi.cr)
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ml',I.cr, psi.cr) ####
 
 
 } else if (extraction == 'ols') {
 
-dg2r = D.g.2.r (Lambda, Phi, extraction='ols')
-Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols') #####
+dg2r = D.g.2.r (Lambda, Phi, extraction='ols',I.cr, psi.cr)
+Hessian = EFA.Hessian (Lambda, Phi, Rsample, extraction='ols',I.cr, psi.cr) #####
 
 
 } else {
@@ -66,6 +79,7 @@ stop ('Factor extraction method is incorrectly specified.')
 }
 
 
+## start of 2020-05-13, GZ
 
 if (acm.type==1) {
   Y.Hat = u.r
@@ -107,6 +121,7 @@ for (j in 2:p) {
 
 Ham = (t(dg2r.upper) %*% Y.Hat %*% dg2r.upper) * 4 # Multiplying by 4 to accommodate the partial derivatives
 
+## end of 2020-05-13, GZ
 
 # Ham = t(dg2r) %*% u.r %*% dg2r
 
@@ -154,11 +169,11 @@ Olq.Con.Parameters = Derivative.Constraints.Numerical(Lambda,Phi,'xtarget',norma
 
 ### 
 
-
+nlphi = p * m + m *(m-1)/2 # the number of factor loadings and factor correlations
 Temp.Bigger = matrix(0,(Nq+Nc),(Nq+Nc))
 Temp.Bigger[1:Nq,1:Nq] = Hessian
-Temp.Bigger[1:Nq,(Nq+1):(Nq+Nc)] = t(Olq.Con.Parameters)
-Temp.Bigger[(Nq+1):(Nq+Nc),1:Nq] = Olq.Con.Parameters
+Temp.Bigger[1:nlphi,(Nq+1):(Nq+Nc)] = t(Olq.Con.Parameters[1:Nc, 1:nlphi])
+Temp.Bigger[(Nq+1):(Nq+Nc),1:nlphi] = Olq.Con.Parameters[1:Nc, 1:nlphi]
 
 
 Temp.Bigger.inverse = solve(Temp.Bigger)

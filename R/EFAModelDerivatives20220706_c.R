@@ -1,10 +1,16 @@
+### 2022-03-30, Wednesday, Guangjian Zhang
+### The update is to add the option of I.cr; 
+### the newly added argument I.cr specifies the locations of the correlated residuals.
+
+
+### 2016-06-02, Thursday, Guangjian Zhang
 ### The file contains five functions.
 ### EFA.Hessian is the head function
 
 
 ###########################################################################
 
-EFA.Hessian <- function(Lambda, Phi, RSample, extraction=NULL) {
+EFA.Hessian <- function(Lambda, Phi, RSample, extraction=NULL, I.cr=NULL, psi.cr=NULL) {
 
 ### SHessianML and SHessianOLS
 
@@ -14,9 +20,11 @@ EFA.Hessian <- function(Lambda, Phi, RSample, extraction=NULL) {
 # Lambda <- (p,m)
 # Phi <- (m,m), a symmetric matrix
 # R.Sample <- (p,p), a symmetric matrix
+# I.cr <- (n.cr,2), a two-dimensional matrix of the locations of correlated residuals, 2022-03-30, GZ
+# psi.cr <- (p + n.cr), a vector of unique variances and correlated residuals   
 # Result <- (ntemp,ntemp), a matrix of second order derivatives
 
-SHessianML <- function(Lambda, Phi, R.Sample) {
+SHessianML <- function(Lambda, Phi, R.Sample, I.cr=NULL, psi.cr=NULL) {
 
 # It invokes two external functions: DifS2LPhiPsi and Dif2S2LPhiPsi.
 
@@ -24,7 +32,14 @@ SHessianML <- function(Lambda, Phi, R.Sample) {
 
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
-ntemp = p*m + m*(m-1)/2 + p
+
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
+ntemp = p*m + m*(m-1)/2 + p + n.cr
 
 Result = array( rep(0,ntemp*ntemp), dim=c(ntemp, ntemp))
 
@@ -33,12 +48,20 @@ for (i in 1:p) {
 P[i,i] = 1
 }
 
+if (n.cr>0) {
+  for (i in 1:n.cr) {
+    P[I.cr[i,1],I.cr[i,2]] = P[I.cr[i,1],I.cr[i,2]] + psi.cr[p+i] # Correct a bug on 2022-04-05, GZ
+    P[I.cr[i,2],I.cr[i,1]] = P[I.cr[i,2],I.cr[i,1]] + psi.cr[p+i]
+  }
+}
+
+
 PInverse = solve(P)
 
 MTemp1 = PInverse %*% (R.Sample - P) %*% PInverse
 
-FirstDerivative = DifS2LPhiPsi (Lambda, Phi)
-SecondDerivative = Dif2S2LPhiPsi (Lambda, Phi)
+FirstDerivative = DifS2LPhiPsi (Lambda, Phi, I.cr)
+SecondDerivative = Dif2S2LPhiPsi (Lambda, Phi, I.cr)
 
 
 for (j in 1:ntemp) {
@@ -48,7 +71,7 @@ for (j in 1:ntemp) {
   } # i
 } # j
 
-Result
+return(Result)
 
 } # SHessianML
 
@@ -60,8 +83,11 @@ Result
 # Phi <- (m,m), a symmetric matrix
 # R.Sample <- (p,p), a symmetric matrix
 # Result <- (ntemp,ntemp), a matrix of second order derivatives
+# I.cr <- (n.cr,2), a two-dimensional matrix of the locations of correlated residuals, 2022-03-30, GZ
+# psi.cr <- (p + n.cr), a vector of unique variances and correlated residuals  
 
-SHessianOLS <- function(Lambda, Phi, R.Sample) {
+
+SHessianOLS <- function(Lambda, Phi, R.Sample, I.cr=NULL, psi.cr=NULL) {
 
 # It invokes two external functions: DifS2LPhiPsi and Dif2S2LPhiPsi.
 
@@ -70,7 +96,14 @@ SHessianOLS <- function(Lambda, Phi, R.Sample) {
 
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
-ntemp = p*m + m*(m-1)/2 + p
+
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
+ntemp = p*m + m*(m-1)/2 + p + n.cr
 
 Result = array( rep(0,ntemp*ntemp), dim=c(ntemp, ntemp))
 
@@ -79,11 +112,21 @@ for (i in 1:p) {
 P[i,i] = 1
 }
 
+
+if (n.cr>0) {
+  for (i in 1:n.cr) {
+    P[I.cr[i,1],I.cr[i,2]] = P[I.cr[i,1],I.cr[i,2]] + psi.cr[p+i] 
+    P[I.cr[i,2],I.cr[i,1]] = P[I.cr[i,2],I.cr[i,1]] + psi.cr[p+i] 
+  }
+}
+
+
+
 Residual = R.Sample - P
 
 
-FirstDerivative = DifS2LPhiPsi (Lambda, Phi)
-SecondDerivative = Dif2S2LPhiPsi (Lambda, Phi)
+FirstDerivative = DifS2LPhiPsi (Lambda, Phi, I.cr)
+SecondDerivative = Dif2S2LPhiPsi (Lambda, Phi, I.cr)
 
 
 for (j in 1:ntemp) {
@@ -92,7 +135,7 @@ for (j in 1:ntemp) {
   } # i
 } # j
 
-Result * 2
+return(Result * 2) 
 
 } # SHessianOLS
 
@@ -105,16 +148,24 @@ Result * 2
 # covariance matrix WRT factor loadings, factor correlations, and unique variances.
 # Lambda <- (p,m)
 # Phi <- (m,m), a symmetric matrix
+# I.cr <- (i.cr,2), a two-dimensional matrix of the locations of correlated residuals, 2022-03-30, GZ
 # Result <- (p,p,(p*m + m*(m-1)/2 + p))
 
-DifS2LPhiPsi <- function(Lambda, Phi){
+DifS2LPhiPsi <- function(Lambda, Phi, I.cr=NULL){
 
 # The function invokes no other external functions.
 
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
 
-Result = array( rep(0, p*p*( p*m + m*(m-1)/2 + p)), dim=c(p,p,( p*m + m*(m-1)/2 + p) ))
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
+
+Result = array( rep(0, p*p*( p*m + m*(m-1)/2 + p + n.cr)), dim=c(p,p,( p*m + m*(m-1)/2 + p + n.cr) ))
 
 ## Factor loadings
 
@@ -152,9 +203,23 @@ Result[i,i,ij] = 1
 }
  
 
+## Correlated residuals
+
+if (!(is.null(I.cr))) {
+
+  for (i in 1:n.cr) {
+    ij = ij + 1
+    Result[I.cr[i,1],I.cr[i,2],ij] = 1
+    Result[I.cr[i,2],I.cr[i,1],ij] = 1
+  }
+  
+  
+}
+
+
 ## Output
 
-Result
+return(Result)
 
 } # DifS2LPhiPsi
 
@@ -164,9 +229,10 @@ Result
 ### Dif2S2LPhiPsi computes second order derivatives of P WRT parameters
 # Lambda <- (p,m)
 # Phi <- (m,m), a symmetric matrix
+# I.cr <- (i.cr,2), a two-dimensional matrix of the locations of correlated residuals, 2022-03-30, GZ
 # Result <- (p,p,(p*m+m*(m-1)/2+p) , (p*m+m*(m-1)/2+p) )
 
-Dif2S2LPhiPsi <- function(Lambda, Phi){
+Dif2S2LPhiPsi <- function(Lambda, Phi, I.cr=NULL){
 
 # The function invokes no other external functions.
 
@@ -174,7 +240,13 @@ Dif2S2LPhiPsi <- function(Lambda, Phi){
 p = dim(Lambda)[1]
 m = dim(Lambda)[2]
 
-Result = array( rep(0, p*p*(p*m+m*(m-1)/2+p)^2), dim=c(p,p,(p*m+m*(m-1)/2+p) , (p*m+m*(m-1)/2+p) ))
+if (is.null(I.cr)) 
+{n.cr = 0} else{
+  n.cr = nrow(I.cr)
+}
+
+
+Result = array( rep(0, p*p*(p*m+m*(m-1)/2 + p + n.cr )^2), dim=c(p,p,(p*m+m*(m-1)/2 + p + n.cr) , (p*m+m*(m-1)/2 + p + n.cr) ))
 
 ## Step 1, d^2 S / d L^2
 
@@ -222,11 +294,12 @@ for (l in 2:m) {
 }
 
 ## Step 3, All other second order derivatives are zero. 
+# I need to do nothing
 
 
 ## Output
 
-Result
+return(Result)
 
 } # Dif2S2LPhiPsi
 # ....................................................................................
@@ -237,17 +310,17 @@ if (is.null(extraction)) extraction='ml'
 
 if (extraction=='ml') {
 
-Hessian.Analytic = SHessianML(Lambda, Phi, RSample)
+Hessian.Analytic = SHessianML(Lambda, Phi, RSample, I.cr, psi.cr)
 
 } else if (extraction=='ols') {
 
-Hessian.Analytic = SHessianOLS(Lambda, Phi, RSample)
+Hessian.Analytic = SHessianOLS(Lambda, Phi, RSample, I.cr, psi.cr)
 
 } else {
   stop ("wrong specification for the factor extraction method")
 }
 
-Hessian.Analytic
+return(Hessian.Analytic)
 
 } # EFA.Hessian
 

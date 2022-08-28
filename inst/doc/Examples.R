@@ -13,8 +13,8 @@ options(digits=3)
 mnames=c("Nov", "Div", "Dit","LEA","L_A", "AES", "E_I", "ENT", "RES", "EMO", "I_S",
          "PRA", "O_P", "MET", "FAC", "I_E", "FAM", "DEF", "G_M", "INT", "S_S", 
          "V_S", "T_M", "REN", "SOC", "DIS", "HAR", "T_E")
-fnames=c("Social Potency", "Dependability","Accommodation","Relatedness")
-res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames, fnames=fnames)
+
+res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames)
 res1
 
 ## ----echo=FALSE---------------------------------------------------------------
@@ -37,10 +37,33 @@ reduced2 <- BFI228[,1:17]
 mnames=c("talkative", "reserved_R", "fullenergy", "enthusiastic", "quiet_R","assertive", 
          "shy_R", "outgoing", "findfault_R", "helpful", "quarrels_R", "forgiving", 
          "trusting", "cold_R", "considerate", "rude_R", "cooperative")
-fnames=c("extraversion","agreeableness")
+
 res2 <-efa(x=reduced2, factors=2, dist="ordinal", rotation="geomin", merror="YES",
-           mnames=mnames, fnames=fnames)
+           mnames=mnames)
 res2
+
+## -----------------------------------------------------------------------------
+ xcor <- matrix(c(
+  1.00,  0.37,  0.29,  0.43, -0.07, -0.05, -0.04, -0.01,
+  0.37,  1.00,  0.51,  0.37, -0.03, -0.03, -0.06, -0.03,
+  0.29,  0.51,  1.00,  0.37, -0.03, -0.01, -0.02, -0.04,
+  0.43,  0.37,  0.37,  1.00, -0.03, -0.03, -0.02, -0.01,
+ -0.07, -0.03, -0.03, -0.03,  1.00,  0.61,  0.41,  0.32,
+ -0.05, -0.03, -0.01, -0.03,  0.61,  1.00,  0.47,  0.38,
+ -0.04, -0.06, -0.02, -0.02,  0.41,  0.47,  1.00,  0.47,
+ -0.01, -0.03, -0.04, -0.01,  0.32,  0.38,  0.47,  1.00),
+ ncol=8)
+
+ n.cr=2
+ I.cr = matrix(0,n.cr,2)
+
+ I.cr[1,1] = 5
+ I.cr[1,2] = 6
+ I.cr[2,1] = 7
+ I.cr[2,2] = 8
+
+ efa(covmat=xcor,factors=2, n.obs=1657, I.cr=I.cr)
+
 
 ## -----------------------------------------------------------------------------
 cormat <- matrix(c(1, .865, .733, .511, .412, .647, -.462, -.533, -.544,

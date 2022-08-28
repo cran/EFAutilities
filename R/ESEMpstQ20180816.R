@@ -1,5 +1,6 @@
 ### 2018-07-31, Tuesday, Guangjian Zhang
 ### SEMpstQ standards for Exploratory Structural Equation Modeling with partially specified target, oblique rotation
+### I adapt the R function of xpstQ, which stands for extended partially specified target, oblique rotation.  
 
 
 
@@ -13,12 +14,36 @@ ESEMpstQ = function (A, Tmat = diag(ncol(A)), normalize = FALSE, eps = 1e-05,
     maxit = 1000, method = "quartimin", methodArgs = NULL, BGTarget=NULL, BGWeight=NULL, PhiTarget = NULL, PhiWeight = NULL,  wxt2 = 1e0) 
 {
 
+# A(p,m), the unrotated factor loading matrix, Input
+# Tmat(m,m), the factor rotation matrix defined as in Jennrich2012Psychometrika, Input
+# Normalize, logical, whether rows are standardized, Input
+# esp, the user specified stopping criterion, Input
+# maxit, the maximum number of iterations, Input
+# method, characters, the rotation criterion, Input
+# methodArgs, character, the target matrix and the weight matrix for factor loadings, Input
+
+# BGWeight(m1,m), the weight matrix for elements in Beta and Gamma, Input
+# BGTarget(m1,m), the target matrix for elements in Beta and Gamma, Input
+
+# PhiWeight(m,m), the weight matrix for Phi_xi, Input
+# PhiTarget(m,m), the target matrix for Phi_xi, Input
+
+# wxt2 = 1e0, the weight controling the contribution of phi toward to the whole target criterion function
+
+# Loadings (p,m), the rotated factor loading matrix, Output
+# Phi (m,m), the rotated factor correlation matrix, Output
+# Th (m,m), the transformation matrix, Output
+# Table, iteration details, Output
 
 #---------------------------------------------------------------------------------
 vgQ.pst <- function(L, W=NULL, Target=NULL){
    if(is.null(W))      stop("argument W must be specified.")
    if(is.null(Target)) stop("argument Target must be specified.")
-  
+   # Needs weight matrix W with 1's at specified values, 0 otherwise
+   # e.g. W = matrix(c(rep(1,4),rep(0,8),rep(1,4)),8). 
+   # When W has only 1's this is procrustes rotation
+   # Needs a Target matrix Target with hypothesized factor loadings.
+   # e.g. Target = matrix(0,8,2)
    Btilde <- W * Target
    list(Gq= 2*(W*L-Btilde), 
         f = sum((W*L-Btilde)^2),
@@ -31,6 +56,9 @@ vgQ.pst <- function(L, W=NULL, Target=NULL){
 
 D.Phi.2.T <- function(T) {
 
+# T is the rotation matrix, input
+# Lambda = A %*% solve(t(T))
+# Phi = t(T) %*% T
 
 m = dim(T)[1]
 
@@ -54,6 +82,10 @@ Result
 
 D.BG.2.Phi <- function(T,m1) {
 
+# T is the rotation matrix, input
+# T is defined in the following way: Lambda = A %*% solve(t(T)) and Phi = t(T) %*% T
+# m1, the number of endogenous factors, input
+
 m = dim(T)[1]
 
 
@@ -61,7 +93,7 @@ Result = array(rep(0,m1*m*m*m), dim=c(m1,m,m,m))
 
 Phi = t(T) %*% T
 
- for (i in 1:m1) {
+ for (i in 1:m1) {   # Note that we need to compute the derivative ROW by ROW rather than column by column.
 
  Phi.inv = solve(Phi[(i+1):m, (i+1):m])
  w.i = Phi[i,(i+1):m] %*% Phi.inv
@@ -119,9 +151,18 @@ Result
 
 ### The function "vgQ.ESEM" conducts exploratory SEM as a rotation method.
 ### The function is modified from vgQ.pst in the R package "GPArotation"
+### 2018-07-31, Guangjian Zhang
 
 vgQ.ESEM <- function(Transform, BGWeight=NULL, BGTarget=NULL, PhiW=NULL, PhiTarget=NULL, wxt2 = 1e0){
 
+# Transform(m:m), the T matrix, defined as in Jennrich2002Psychometrika, Input
+# PhiW(m,m), the weight matrix for Phi, input
+# PhiTarget(m,m), the target matrix for Phi, Input
+# wxt2 = 1e0, the weight controling the contribution of phi toward to the whole target criterion function, input
+
+# dQ2T(m,m), the derivatives of the rotation crtieria with regard to T, Output
+# f.Phi, the rotation criterion function value for Phi, only the UPPER triangular elements are considered, Output
+# Method, character strings, output
 
    if(is.null(PhiW))      stop("argument PhiW must be specified.")
    if(is.null(PhiTarget)) stop("argument PhiTarget must be specified.")
@@ -130,6 +171,12 @@ vgQ.ESEM <- function(Transform, BGWeight=NULL, BGTarget=NULL, PhiW=NULL, PhiTarg
    if (max(abs(PhiTarget - t(PhiTarget)))>1.0e-10) stop(" PhiTarget must be symmetric.")
    if (max(abs(PhiW - t(PhiW)))>1.0e-10) stop(" PhiW must be symmetric.")
 
+   # library(MASS)
+   # Needs weight matrix W with 1's at specified values, 0 otherwise
+   # e.g. W = matrix(c(rep(1,4),rep(0,8),rep(1,4)),8). 
+   # When W has only 1's this is procrustes rotation
+   # Needs a Target matrix Target with hypothesized factor loadings.
+   # e.g. Target = matrix(0,8,2)
 
 
    m  = dim(Transform)[1]
@@ -173,7 +220,7 @@ vgQ.ESEM <- function(Transform, BGWeight=NULL, BGTarget=NULL, PhiW=NULL, PhiTarg
    BG2T    = D.BG.2.T (BG2Phi,Phi2T)
 
 
-   for (i in 1:m1) {
+   for (i in 1:m1) { # Row by Row
     for (j in (i+1):m) {
        if (BGWeight[i,j] == 1) {
           dQ2T = dQ2T + BG2T[i,j,1:m,1:m] * Gq2BG[i,j]
@@ -183,7 +230,10 @@ vgQ.ESEM <- function(Transform, BGWeight=NULL, BGTarget=NULL, PhiW=NULL, PhiTarg
 
   } # (m1 > 0)
 
+## Phi.xi
 
+
+# check this part carefully
 
    
    Phi.xi = Phi[(m1+1):m,(m1+1):m]   
@@ -232,18 +282,18 @@ if (m2>1) {
         A <- A/W
     }
     al <- 1
-    L <- A %*% t(solve(Tmat))
-    Method <- paste("vgQ", method, sep = ".")
-    VgQ <- do.call(Method, append(list(L), methodArgs))
-    G1 <- -t(t(L) %*% VgQ$Gq %*% solve(Tmat))
-    f1 <- VgQ$f
+    L <- A %*% t(solve(Tmat))                              # 2016-03-16, GZ
+    Method <- paste("vgQ", method, sep = ".")              # 2016-03-16, GZ
+    VgQ <- do.call(Method, append(list(L), methodArgs))    # 2016-03-16, GZ
+    G1 <- -t(t(L) %*% VgQ$Gq %*% solve(Tmat))               # 2016-03-16, GZ
+    f1 <- VgQ$f                                             # 2016-03-16, GZ
 
-    VgQ.2 = vgQ.ESEM(Tmat, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)
-    f = f1 + VgQ.2$f.ESEMT
-    G = G1 + VgQ.2$dQ2T
+    VgQ.2 = vgQ.ESEM(Tmat, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)         # 2018-7-31, GZ
+    f = f1 + VgQ.2$f.ESEMT                                    #  2018-07-31, GZ
+    G = G1 + VgQ.2$dQ2T                                     # 2016-03-16, GZ
     Table <- NULL
-    VgQt <- do.call(Method, append(list(L), methodArgs))
-    VgQ.2 = vgQ.ESEM(Tmat, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)
+    VgQt <- do.call(Method, append(list(L), methodArgs))   # 2016-03-16, GZ
+    VgQ.2 = vgQ.ESEM(Tmat, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)         # 2018-7-31, GZ
 
     for (iter in 0:maxit) {
         Gp <- G - Tmat %*% diag(c(rep(1, nrow(G)) %*% (Tmat * 
@@ -257,23 +307,23 @@ if (m2>1) {
             X <- Tmat - al * Gp
             v <- 1/sqrt(c(rep(1, nrow(X)) %*% X^2))
             Tmatt <- X %*% diag(v)
-            L <- A %*% t(solve(Tmatt))
-            VgQt <- do.call(Method, append(list(L), methodArgs))
-            VgQ.2 = vgQ.ESEM(Tmatt, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)
+            L <- A %*% t(solve(Tmatt))                            # 2016-03-16, GZ
+            VgQt <- do.call(Method, append(list(L), methodArgs))  # 2016-03-16, GZ
+            VgQ.2 = vgQ.ESEM(Tmatt, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)         # 2018-7-31, GZ
 
 
-            improvement <- f - ( VgQt$f + VgQ.2$f.ESEMT )
+            improvement <- f - ( VgQt$f + VgQ.2$f.ESEMT )       # 2018-07-31, GZ
             if (improvement > 0.5 * s^2 * al) 
                 break
             al <- al/2
         }
         Tmat <- Tmatt
-        f1 <- VgQt$f
-        G1 <- -t(t(L) %*% VgQt$Gq %*% solve(Tmatt))
+        f1 <- VgQt$f                                        # 2016-03-16, GZ
+        G1 <- -t(t(L) %*% VgQt$Gq %*% solve(Tmatt))         # 2016-03-16, GZ
 
-    VgQ.2 = vgQ.ESEM(Tmatt, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)
-    f = f1 + VgQ.2$f.ESEMT
-    G = G1 + VgQ.2$dQ2T                                     
+    VgQ.2 = vgQ.ESEM(Tmatt, BGWeight, BGTarget, PhiWeight, PhiTarget, wxt2)         # 2018-7-31, GZ 
+    f = f1 + VgQ.2$f.ESEMT                                    #  2018-07-31, GZ
+    G = G1 + VgQ.2$dQ2T                                     # 2016-03-16, GZ
 
 
     }
