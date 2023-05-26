@@ -17,14 +17,11 @@ mnames=c("Nov", "Div", "Dit","LEA","L_A", "AES", "E_I", "ENT", "RES", "EMO", "I_
 res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames)
 res1
 
+## -----------------------------------------------------------------------------
+print (res1, moredetail=TRUE)
+
 ## ----echo=FALSE---------------------------------------------------------------
 options(digits=3)
-
-## -----------------------------------------------------------------------------
-res1$rotatedlow      # lower bound for 95 percent confidence intervals for factor loadings
-res1$rotatedupper    # upper bound for 95 percent confidence intervals for factor loadings
-res1$Philow         # lower bound for 95 percent confidence intervals for factor correlations
-res1$Phiupper       # upper bound for 95 percent confidence intervals for factor correlations
 
 ## -----------------------------------------------------------------------------
 res1$ModelF

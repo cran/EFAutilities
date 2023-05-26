@@ -66,20 +66,20 @@ mnames=c("Nov", "Div", "Dit","LEA","L_A", "AES", "E_I", "ENT", "RES", "EMO", "I_
 res1 <- efa(x=CPAI537,factors=4, fm='ml', mnames=mnames)
 res1
 ```
-The basic output gives you a summary of the analysis, a rotated factor loading matrix and a factor correlation matrix. We can access further results by the `$` command. For example, we can obtain the confidence intervals for the factor loadings and factor correlations with the following commands:
+The basic output is a brief summary of the analysis, a rotated factor loading matrix and a factor correlation matrix. We can request more detailed output using the `moredetail` option.
+
+```{r}
+print (res1, moredetail=TRUE)
+```
+
+
+We can access even more detailed results by the `$` command. For example, we can examine the test statistic and measures of model fit using the following commands:
 
 ```{r echo=FALSE}
 options(digits=3)
 ```
 
-```{r}
-res1$rotatedlow      # lower bound for 95 percent confidence intervals for factor loadings
-res1$rotatedupper    # upper bound for 95 percent confidence intervals for factor loadings
-res1$Philow         # lower bound for 95 percent confidence intervals for factor correlations
-res1$Phiupper       # upper bound for 95 percent confidence intervals for factor correlations
-```
 
-We can also look at the test statistic and measures of model fit.
 
 ```{r}
 res1$ModelF

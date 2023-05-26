@@ -241,7 +241,7 @@ Model.Fit <- function(statistic.sample,fm,p,m,n,confid.level, I.cr=NULL) {
     l.lambda = temp$root 
   }
   
-  if (p.perfect > (0.5 + confid.level)/2) {
+  if (p.perfect > (1 + confid.level)/2) { # removed a bug on 2023-03-08, GZ!
     u.lambda = 0
   } else{
     temp = uniroot (find.lambda, c(0,lambda.range),f.dis = statistic.sample, d=df, prob= (0.5 - confid.level/2) )

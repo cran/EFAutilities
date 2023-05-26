@@ -9,12 +9,12 @@ Performs exploratory factor analysis under a variety of conditions. In particula
 
 
 \usage{
-efa(x=NULL, factors=NULL, covmat=NULL, acm=NULL, n.obs=NULL, dist='normal', 
+efa(x=NULL, factors=NULL, covmat=NULL, acm=NULL, n.obs=NULL, dist='normal',
 fm='ols', mtest = TRUE, rtype='oblique', rotation='CF-varimax', normalize=FALSE,
-maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,PhiWeight = NULL, 
-PhiTarget = NULL, useorder=FALSE, se='sandwich', LConfid=c(0.95,0.90), 
-CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0, 
-I.cr=NULL, PowerParam = c(0.05,0.3)) 
+maxit=1000, geomin.delta=NULL, MTarget=NULL, MWeight=NULL,PhiWeight = NULL,
+PhiTarget = NULL, useorder=FALSE, se='sandwich', LConfid=c(0.95,0.90),
+CItype='pse', Ib=2000, mnames=NULL, fnames=NULL, merror='YES', wxt2 = 1e0,
+I.cr=NULL, PowerParam = c(0.05,0.3))
 }
 
 
@@ -159,6 +159,7 @@ Zhang, G. (2014). Estimating standard errors in exploratory factor analysis. Mul
 Zhang, G., Preacher, K. J., & Jennrich, R. I. (2012). The infinitesimal jackknife with exploratory
 factor analysis. Psychometrika, 77 , 634-648.
 
+Zhang, G., Preacher, K., Hattori, M., Ge, J., & Trichtinger, L (2019). A sandwich standard error estimator for exploratory factor analysis with nonnormal data and imperfect models. Applied Psychological Measurement,45, 360-373.
 
 }
 
@@ -254,7 +255,7 @@ data("CPAI537")    # Chinese personality assessment inventory (N = 537)
 #
 
 #11) EFA with correlated residuals
-# The data is a subset of the study reported by Watson Clark & Tellegen, A. (1988). 
+# The data is a subset of the study reported by Watson Clark & Tellegen, A. (1988).
 
 # xcor <- matrix(c(
 #  1.00,  0.37,  0.29,  0.43, -0.07, -0.05, -0.04, -0.01,
@@ -275,7 +276,7 @@ data("CPAI537")    # Chinese personality assessment inventory (N = 537)
 # I.cr[2,1] = 7
 # I.cr[2,2] = 8
 
-# efa (covmat=PANAS8.cor,factors=2, n.obs=1657, I.cr=I.cr)
+# efa (covmat=xcor,factors=2, n.obs=1657, I.cr=I.cr)
 
 
 }
